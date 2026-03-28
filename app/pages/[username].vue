@@ -26,13 +26,12 @@
                 <template v-for="link in links" :key="link.id">
 
                     <!-- 一般連結 -->
-
-                    <!-- 一般連結 -->
-
                     <a v-if="link.type === 'link' || !link.type" :href="link.url" target="_blank"
-                        rel="noopener noreferrer" class="block w-full bg-white border border-purple-100 rounded-2xl px-6 py-4 text-center text-sm
-                    font-medium text-gray-700 hover:bg-purple-50 hover:border-purple-300 transition"
-                        @click="recordClick(link.id)">
+                        rel="noopener noreferrer" :style="{
+                            backgroundColor: profile.link_color || '#ffffff',
+                            borderRadius: linkRadius
+                        }" class="block w-full px-6 py-4 text-center text-sm font-medium transition hover:opacity-80"
+                        :class="linkTextClass" style="border: 1px solid rgba(0,0,0,0.08)" @click="recordClick(link.id)">
                         {{ link.title }}
                     </a>
 
@@ -91,6 +90,36 @@ const bgStyle = computed(() => {
     return { backgroundColor: profile.value.bg_color || '#f3e8ff' }
 })
 
+useHead({
+    title: () => profile.value ? `${profile.value.display_name || profile.value.username} | Myverse` : 'Myverse',
+    meta: [
+        {
+            name: 'description',
+            content: () => profile.value?.bio || `查看 ${profile.value?.display_name || profile.value?.username} 的 Myverse 個人頁面`
+        },
+        {
+            property: 'og:title',
+            content: () => profile.value ? `${profile.value.display_name || profile.value.username} | Myverse` : 'Myverse'
+        },
+        {
+            property: 'og:description',
+            content: () => profile.value?.bio || `查看 ${profile.value?.display_name || profile.value?.username} 的 Myverse 個人頁面`
+        },
+        {
+            property: 'og:image',
+            content: () => profile.value?.avatar_url || ''
+        },
+        {
+            property: 'og:type',
+            content: 'profile'
+        },
+        {
+            name: 'twitter:card',
+            content: 'summary'
+        }
+    ]
+})
+
 onMounted(async () => {
     const { data: profileData } = await $supabase
         .from('profiles')
@@ -122,6 +151,19 @@ function getYoutubeEmbedUrl(url) {
     }
     return `https://www.youtube.com/embed/${videoId}`
 }
+
+const linkRadius = computed(() => {
+    if (profile.value?.link_radius === 'square') return '8px'
+    if (profile.value?.link_radius === 'pill') return '9999px'
+    return '16px' // rounded（預設）
+})
+
+const linkTextClass = computed(() => {
+    const color = profile.value?.link_color || '#ffffff'
+    // 深色背景用白色文字，淺色背景用深色文字
+    const dark = ['#1e293b', '#0f172a', '#065f46']
+    return dark.includes(color) ? 'text-white' : 'text-gray-700'
+})
 
 async function recordClick(linkId) {
     await $supabase

@@ -1,16 +1,21 @@
 <template>
-    <div class="min-h-screen bg-purple-50 flex items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-8 w-full max-w-sm">
+    <div class="min-h-screen flex items-center justify-center px-4"
+        style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 40%, #a7f3d0 100%);">
+
+        <div class="w-full max-w-sm rounded-2xl p-8"
+            style="background: rgba(255,255,255,0.75); border: 1px solid rgba(16,185,129,0.2); backdrop-filter: blur(20px)">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-medium text-purple-700">Myverse</h1>
-                <p class="text-sm text-gray-400 mt-1">你在網路上的專屬宇宙</p>
+                <h1 class="text-3xl font-medium" style="color: #065f46">Myverse</h1>
+                <p class="text-sm mt-1" style="color: #6b7280">你在網路上的專屬宇宙</p>
             </div>
 
-            <p class="text-sm text-gray-500 mb-4">選擇登入方式</p>
+            <p class="text-sm mb-4" style="color: #374151">選擇登入方式</p>
 
             <button @click="loginWithGoogle" :disabled="loading"
-                class="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl py-3 text-sm text-gray-600 hover:bg-gray-50 transition cursor-pointer disabled:opacity-50">
+                class="w-full flex items-center justify-center gap-3 rounded-xl py-3 text-sm transition cursor-pointer disabled:opacity-50"
+                style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #374151"
+                onmouseenter="this.style.background='#f0fdf4'" onmouseleave="this.style.background='white'">
                 <svg width="18" height="18" viewBox="0 0 18 18">
                     <path fill="#4285F4"
                         d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" />
@@ -24,8 +29,9 @@
                 {{ loading ? '登入中...' : '使用 Google 帳號登入' }}
             </button>
 
-            <p class="text-xs text-gray-300 text-center mt-6">登入即代表你同意我們的服務條款</p>
+            <p class="text-xs text-center mt-6" style="color: #9ca3af">登入即代表你同意我們的服務條款</p>
         </div>
+
     </div>
 </template>
 

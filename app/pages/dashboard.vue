@@ -1,29 +1,39 @@
 <template>
-    <div class="min-h-screen bg-purple-50">
+    <div class="min-h-screen"
+        style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 40%, #a7f3d0 100%); background-attachment: fixed;">
 
         <!-- 載入中 -->
         <div v-if="loading" class="flex items-center justify-center min-h-screen">
-            <p class="text-gray-400 text-sm">載入中...</p>
+            <div class="flex items-center gap-3" style="color: #065f46">
+                <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.4"
+                        stroke-dashoffset="10" />
+                </svg>
+                <span class="text-sm">載入中...</span>
+            </div>
         </div>
 
         <!-- 還沒設定 username -->
-        <div v-else-if="!profile" class="flex items-center justify-center min-h-screen">
-            <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-8 w-full max-w-sm">
-                <h1 class="text-2xl font-medium text-purple-700 mb-1">設定你的 Myverse</h1>
-                <p class="text-sm text-gray-400 mb-6">選一個獨特的用戶名稱</p>
+        <div v-else-if="!profile" class="flex items-center justify-center min-h-screen px-4">
+            <div class="w-full max-w-sm rounded-2xl p-8"
+                style="background: rgba(255,255,255,0.75); border: 1px solid rgba(16,185,129,0.2); backdrop-filter: blur(20px)">
+                <h1 class="text-2xl font-medium mb-1" style="color: #065f46">設定你的 Myverse</h1>
+                <p class="text-sm mb-6" style="color: #6b7280">選一個獨特的用戶名稱</p>
 
                 <div class="mb-4">
-                    <label class="text-sm text-gray-500 mb-1 block">用戶名稱</label>
-                    <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden">
-                        <span class="text-sm text-gray-300 px-3">myverse.me/</span>
+                    <label class="text-xs mb-1.5 block font-medium" style="color: #6b7280">用戶名稱</label>
+                    <div class="flex items-center rounded-xl overflow-hidden"
+                        style="background: white; border: 1px solid rgba(16,185,129,0.25)">
+                        <span class="text-sm px-3" style="color: #94a3b8">myverse.me/</span>
                         <input v-model="username" type="text" placeholder="yourname"
-                            class="flex-1 py-3 pr-3 text-sm outline-none" />
+                            class="flex-1 py-3 pr-3 text-sm outline-none bg-transparent" style="color: #065f46" />
                     </div>
-                    <p v-if="usernameError" class="text-xs text-red-400 mt-1">{{ usernameError }}</p>
+                    <p v-if="usernameError" class="text-xs mt-1.5" style="color: #ef4444">{{ usernameError }}</p>
                 </div>
 
                 <button @click="createProfile" :disabled="saving"
-                    class="w-full bg-purple-600 text-white rounded-xl py-3 text-sm hover:bg-purple-700 transition disabled:opacity-50">
+                    class="w-full text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                    style="background: linear-gradient(135deg, #059669, #34d399)">
                     {{ saving ? '建立中...' : '建立我的頁面' }}
                 </button>
             </div>
@@ -35,43 +45,45 @@
             <!-- 標題列 -->
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h1 class="text-xl font-medium text-purple-700">Myverse</h1>
-                    <p class="text-sm text-gray-400">myverse.me/{{ profile.username }}</p>
+                    <h1 class="text-xl font-medium" style="color: #065f46">Myverse</h1>
+                    <p class="text-sm mt-0.5" style="color: #6b7280">myverse.me/{{ profile.username }}</p>
                 </div>
                 <div class="flex items-center gap-4">
-
-                    <a :href="`/${profile.username}`" target="_blank"
-                        class="text-sm text-purple-500 hover:text-purple-700 transition">
+                    <a :href="`/${profile.username}`" target="_blank" class="text-sm font-medium transition"
+                        style="color: #059669">
                         查看我的頁面 →
                     </a>
-                    <button @click="logout" class="text-sm text-gray-400 hover:text-gray-600 transition">
+                    <button @click="logout" class="text-sm transition" style="color: #6b7280">
                         登出
                     </button>
                 </div>
             </div>
+
             <!-- 個人資料 -->
-            <div class="bg-white rounded-2xl border border-purple-100 p-6 mb-4">
+            <div class="rounded-2xl p-6 mb-4"
+                style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-medium text-gray-600">個人資料</h2>
-                    <button v-if="!editingProfile" @click="editingProfile = true"
-                        class="text-xs text-purple-400 hover:text-purple-600 transition">
+                    <h2 class="text-sm font-medium" style="color: #374151">個人資料</h2>
+                    <button v-if="!editingProfile" @click="editingProfile = true" class="text-xs font-medium transition"
+                        style="color: #059669">
                         編輯
                     </button>
                 </div>
 
                 <!-- 頭貼 -->
                 <div class="flex items-center gap-4 mb-4">
-                    <div class="relative">
-                        <div
-                            class="w-16 h-16 rounded-full bg-purple-100 overflow-hidden flex items-center justify-center">
+                    <div class="relative flex-shrink-0">
+                        <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center"
+                            style="background: rgba(5,150,105,0.15); border: 2px solid rgba(52,211,153,0.4)">
                             <img v-if="profile.avatar_url" :src="profile.avatar_url"
                                 class="w-full h-full object-cover" />
-                            <span v-else class="text-xl text-purple-400 font-medium">
+                            <span v-else class="text-xl font-medium" style="color: #059669">
                                 {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
                             </span>
                         </div>
                         <label
-                            class="absolute bottom-0 right-0 w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-purple-700 transition">
+                            class="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition"
+                            style="background: #059669">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white"
                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -82,120 +94,193 @@
                         </label>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-700">{{ profile.display_name || profile.username }}</p>
-                        <p class="text-xs text-gray-400 mt-0.5">點擊頭貼旁的按鈕更換照片</p>
+                        <p class="text-sm font-medium" style="color: #065f46">{{ profile.display_name ||
+                            profile.username }}</p>
+                        <p class="text-xs mt-0.5" style="color: #6b7280">點擊頭貼旁的按鈕更換照片</p>
                     </div>
                 </div>
+
                 <!-- 顯示模式 -->
                 <div v-if="!editingProfile">
-                    <p class="text-sm font-medium text-gray-700">{{ profile.display_name || '未設定名稱' }}</p>
-                    <p class="text-xs text-gray-400 mt-1">{{ profile.bio || '未設定簡介' }}</p>
+                    <p class="text-sm font-medium" style="color: #374151">{{ profile.display_name || '未設定名稱' }}</p>
+                    <p class="text-xs mt-1" style="color: #6b7280">{{ profile.bio || '未設定簡介' }}</p>
                 </div>
 
                 <!-- 編輯模式 -->
                 <div v-else class="flex flex-col gap-3">
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">顯示名稱</label>
+                        <label class="text-xs mb-1.5 block font-medium" style="color: #6b7280">顯示名稱</label>
                         <input v-model="editDisplayName" type="text" placeholder="你的名字"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
+                            class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                            style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                            onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                            onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">個人簡介</label>
+                        <label class="text-xs mb-1.5 block font-medium" style="color: #6b7280">個人簡介</label>
                         <textarea v-model="editBio" placeholder="介紹一下自己..." rows="3"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300 resize-none" />
+                            class="w-full rounded-xl px-4 py-3 text-sm outline-none resize-none transition"
+                            style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                            onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                            onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
                     </div>
-                    <p v-if="profileError" class="text-xs text-red-400">{{ profileError }}</p>
+                    <p v-if="profileError" class="text-xs" style="color: #ef4444">{{ profileError }}</p>
                     <div class="flex gap-2">
-                        <button @click="cancelEditProfile"
-                            class="flex-1 border border-gray-200 text-gray-500 rounded-xl py-3 text-sm hover:bg-gray-50 transition">
+                        <button @click="cancelEditProfile" class="flex-1 rounded-xl py-3 text-sm font-medium transition"
+                            style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">
                             取消
                         </button>
                         <button @click="saveProfile" :disabled="savingProfile"
-                            class="flex-1 bg-purple-600 text-white rounded-xl py-3 text-sm hover:bg-purple-700 transition disabled:opacity-50">
+                            class="flex-1 text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                            style="background: linear-gradient(135deg, #059669, #34d399)">
                             {{ savingProfile ? '儲存中...' : '儲存' }}
                         </button>
                     </div>
                 </div>
             </div>
-            <!-- 背景設定 -->
-            <div class="bg-white rounded-2xl border border-purple-100 p-6 mb-4">
-                <h2 class="text-sm font-medium text-gray-600 mb-4">背景設定</h2>
 
-                <!-- 背景類型切換 -->
+            <!-- 背景設定 -->
+            <div class="rounded-2xl p-6 mb-4"
+                style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                <h2 class="text-sm font-medium mb-4" style="color: #374151">背景設定</h2>
+
                 <div class="flex gap-2 mb-4">
                     <button @click="setBgType('color')"
-                        :class="profile.bg_type === 'color' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500'"
-                        class="text-xs px-4 py-2 rounded-xl transition">
+                        :style="profile.bg_type === 'color' ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;' : 'background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280'"
+                        class="text-xs px-4 py-2 rounded-xl transition font-medium">
                         顏色
                     </button>
                     <button @click="setBgType('image')"
-                        :class="profile.bg_type === 'image' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500'"
-                        class="text-xs px-4 py-2 rounded-xl transition">
+                        :style="profile.bg_type === 'image' ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;' : 'background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280'"
+                        class="text-xs px-4 py-2 rounded-xl transition font-medium">
                         圖片
                     </button>
                 </div>
 
-                <!-- 顏色選擇 -->
-                <div v-if="profile.bg_type === 'color'" class="flex flex-wrap gap-2">
-                    <button v-for="color in bgColors" :key="color" @click="setBgColor(color)"
-                        :style="{ backgroundColor: color }"
-                        :class="profile.bg_color === color ? 'ring-2 ring-purple-500 ring-offset-2' : ''"
-                        class="w-8 h-8 rounded-full transition" />
+                <div v-if="profile.bg_type === 'color'">
+                    <div class="flex flex-wrap gap-2">
+                        <button v-for="color in bgColors" :key="color" @click="setBgColor(color)"
+                            :style="{ backgroundColor: color }"
+                            :class="profile.bg_color === color ? 'ring-2 ring-emerald-400 ring-offset-2' : ''"
+                            class="w-8 h-8 rounded-full transition" />
+                    </div>
+                    <div v-if="profile.bg_color" class="flex items-center gap-2 mt-3">
+                        <div class="w-4 h-4 rounded-full flex-shrink-0" :style="{ backgroundColor: profile.bg_color }">
+                        </div>
+                        <span class="text-xs font-mono" style="color: #6b7280">{{ profile.bg_color }}</span>
+                    </div>
                 </div>
 
-                <!-- 圖片上傳 -->
                 <div v-if="profile.bg_type === 'image'">
-                    <input type="file" accept="image/*" @change="uploadBgImage" class="text-sm text-gray-500" />
+                    <label class="flex items-center gap-2 cursor-pointer w-fit">
+                        <span class="text-sm font-medium rounded-xl px-4 py-2.5 transition"
+                            style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">選擇圖片</span>
+                        <input type="file" accept="image/*" @change="uploadBgImage" class="hidden" />
+                    </label>
                     <div v-if="profile.bg_image_url" class="mt-3 relative">
                         <img :src="profile.bg_image_url" class="w-full h-24 object-cover rounded-xl" />
                         <button @click="removeBgImage"
-                            class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg hover:bg-red-600 transition">
+                            class="absolute top-2 right-2 text-white text-xs px-2.5 py-1 rounded-lg transition"
+                            style="background: rgba(239,68,68,0.85)">
                             刪除圖片
                         </button>
                     </div>
                 </div>
             </div>
-            <!-- 新增卡片 -->
-            <div class="bg-white rounded-2xl border border-purple-100 p-6 mb-4">
-                <h2 class="text-sm font-medium text-gray-600 mb-4">新增卡片</h2>
 
-                <!-- 類型選擇 -->
+            <!-- 連結樣式設定 -->
+            <div class="rounded-2xl p-6 mb-4"
+                style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                <h2 class="text-sm font-medium mb-4" style="color: #374151">連結樣式</h2>
+
+                <!-- 圓角選擇 -->
+                <div class="mb-4">
+                    <label class="text-xs font-medium mb-2 block" style="color: #6b7280">圓角樣式</label>
+                    <div class="flex gap-2">
+                        <button v-for="r in radiusOptions" :key="r.value" @click="setLinkRadius(r.value)" :style="profile.link_radius === r.value
+                            ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;'
+                            : 'background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280'"
+                            class="flex-1 py-2.5 text-xs font-medium transition"
+                            :class="r.value === 'square' ? 'rounded-lg' : r.value === 'rounded' ? 'rounded-xl' : 'rounded-full'">
+                            {{ r.label }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 顏色選擇 -->
+                <div>
+                    <label class="text-xs font-medium mb-2 block" style="color: #6b7280">連結卡片顏色</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button v-for="color in linkColors" :key="color" @click="setLinkColor(color)"
+                            :style="{ backgroundColor: color }"
+                            :class="profile.link_color === color ? 'ring-2 ring-emerald-400 ring-offset-2' : ''"
+                            class="w-8 h-8 rounded-full transition" style="border: 1px solid rgba(0,0,0,0.08)" />
+                    </div>
+                    <div v-if="profile.link_color" class="flex items-center gap-2 mt-3">
+                        <div class="w-4 h-4 rounded-full flex-shrink-0" :style="{ backgroundColor: profile.link_color }"
+                            style="border: 1px solid rgba(0,0,0,0.08)"></div>
+                        <span class="text-xs font-mono" style="color: #6b7280">{{ profile.link_color }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新增卡片 -->
+            <div class="rounded-2xl p-6 mb-4"
+                style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                <h2 class="text-sm font-medium mb-4" style="color: #374151">新增卡片</h2>
+
                 <div class="flex gap-2 mb-4">
                     <button v-for="t in cardTypes" :key="t.value" @click="newType = t.value"
-                        :class="newType === t.value ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500'"
-                        class="text-xs px-4 py-2 rounded-xl transition">
+                        :style="newType === t.value ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;' : 'background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280'"
+                        class="text-xs px-4 py-2 rounded-xl transition font-medium">
                         {{ t.label }}
                     </button>
                 </div>
 
                 <div class="flex flex-col gap-3">
                     <input v-model="newTitle" type="text" :placeholder="titlePlaceholder"
-                        class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
+                        class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                        style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                        onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                        onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
                     <input v-if="newType !== 'image'" v-model="newUrl" type="text" :placeholder="urlPlaceholder"
-                        class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
-                    <input v-if="newType === 'image'" type="file" accept="image/*" @change="onCardImageSelected"
-                        class="text-sm text-gray-500" />
-                    <p v-if="linkError" class="text-xs text-red-400">{{ linkError }}</p>
+                        class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                        style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                        onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                        onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+                    <label v-if="newType === 'image'" class="flex items-center gap-2 cursor-pointer">
+                        <span class="text-sm font-medium rounded-xl px-4 py-2.5 transition"
+                            style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">選擇圖片</span>
+                        <input type="file" accept="image/*" @change="onCardImageSelected" class="hidden" />
+                        <span v-if="newCardImageFile" class="text-xs" style="color: #059669">{{ newCardImageFile.name
+                            }}</span>
+                    </label>
+                    <p v-if="linkError" class="text-xs" style="color: #ef4444">{{ linkError }}</p>
                     <button @click="addLink" :disabled="addingLink"
-                        class="bg-purple-600 text-white rounded-xl py-3 text-sm hover:bg-purple-700 transition disabled:opacity-50">
+                        class="w-full text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                        style="background: linear-gradient(135deg, #059669, #34d399)">
                         {{ addingLink ? '新增中...' : '+ 新增卡片' }}
                     </button>
                 </div>
             </div>
 
             <!-- 連結清單 -->
-            <div class="bg-white rounded-2xl border border-purple-100 p-6">
-                <h2 class="text-sm font-medium text-gray-600 mb-4">我的連結（{{ links.length }}）</h2>
-                <div v-if="links.length === 0" class="text-sm text-gray-300 text-center py-4">
+            <div class="rounded-2xl p-6"
+                style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                <h2 class="text-sm font-medium mb-4" style="color: #374151">我的連結（{{ links.length }}）</h2>
+
+                <div v-if="links.length === 0" class="text-sm text-center py-4" style="color: #9ca3af">
                     還沒有連結，新增一個吧！
                 </div>
+
                 <div v-else>
                     <VueDraggable v-model="links" :animation="150" handle=".drag-handle" class="flex flex-col gap-3"
                         @end="onDragEnd">
                         <div v-for="link in links" :key="link.id"
-                            class="flex items-center justify-between border border-gray-100 rounded-xl px-4 py-3">
-                            <div class="flex items-center gap-3">
-                                <span class="drag-handle cursor-grab text-gray-300 hover:text-gray-400">
+                            class="flex items-center justify-between rounded-xl px-4 py-3 transition"
+                            style="background: rgba(255,255,255,0.8); border: 1px solid rgba(16,185,129,0.12)">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="drag-handle cursor-grab flex-shrink-0" style="color: #6ee7b7">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2">
                                         <circle cx="9" cy="5" r="1" fill="currentColor" />
@@ -206,44 +291,47 @@
                                         <circle cx="15" cy="19" r="1" fill="currentColor" />
                                     </svg>
                                 </span>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-700">{{ link.title }}</p>
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ link.url }}</p>
-                                    <p class="text-xs text-purple-400 mt-1">{{ link.link_clicks[0].count }} 次點擊</p>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium truncate" style="color: #065f46">{{ link.title }}</p>
+                                    <p class="text-xs mt-0.5 truncate" style="color: #6b7280">{{ link.url }}</p>
+                                    <p class="text-xs mt-1 font-medium" style="color: #059669">{{
+                                        link.link_clicks[0].count }} 次點擊</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 ml-4">
-                                <button @click="openEdit(link)"
-                                    class="text-xs text-purple-400 hover:text-purple-600 transition">
-                                    編輯
-                                </button>
-                                <button @click="deleteLink(link.id)"
-                                    class="text-xs text-red-400 hover:text-red-600 transition">
-                                    刪除
-                                </button>
+                            <div class="flex items-center gap-3 ml-4 flex-shrink-0">
+                                <button @click="openEdit(link)" class="text-xs font-medium transition"
+                                    style="color: #059669">編輯</button>
+                                <button @click="deleteLink(link.id)" class="text-xs font-medium transition"
+                                    style="color: #9ca3af">刪除</button>
                             </div>
                         </div>
                     </VueDraggable>
                 </div>
+
                 <!-- 編輯表單 Modal -->
-                <div v-if="editingLink"
-                    class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
-                    @click.self="closeEdit">
-                    <div class="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-xl">
-                        <h2 class="text-sm font-medium text-gray-600 mb-4">編輯卡片</h2>
+                <div v-if="editingLink" class="fixed inset-0 flex items-center justify-center z-50"
+                    style="background: rgba(5,150,105,0.1); backdrop-filter: blur(12px)" @click.self="closeEdit">
+                    <div class="w-full max-w-sm mx-4 rounded-2xl p-6 shadow-xl"
+                        style="background: white; border: 1px solid rgba(16,185,129,0.2)">
+                        <h2 class="text-sm font-medium mb-4" style="color: #374151">編輯卡片</h2>
                         <div class="flex flex-col gap-3">
                             <input v-model="editTitle" type="text" placeholder="標題"
-                                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
+                                class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                                style="background: #f0fdf4; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                                onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                                onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
                             <input v-if="editingLink.type !== 'image'" v-model="editUrl" type="text" placeholder="網址"
-                                class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
-                            <p v-if="editError" class="text-xs text-red-400">{{ editError }}</p>
+                                class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                                style="background: #f0fdf4; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                                onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                                onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+                            <p v-if="editError" class="text-xs" style="color: #ef4444">{{ editError }}</p>
                             <div class="flex gap-2">
-                                <button @click="closeEdit"
-                                    class="flex-1 border border-gray-200 text-gray-500 rounded-xl py-3 text-sm hover:bg-gray-50 transition">
-                                    取消
-                                </button>
+                                <button @click="closeEdit" class="flex-1 rounded-xl py-3 text-sm font-medium transition"
+                                    style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">取消</button>
                                 <button @click="saveEdit" :disabled="saving"
-                                    class="flex-1 bg-purple-600 text-white rounded-xl py-3 text-sm hover:bg-purple-700 transition disabled:opacity-50">
+                                    class="flex-1 text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                                    style="background: linear-gradient(135deg, #059669, #34d399)">
                                     {{ saving ? '儲存中...' : '儲存' }}
                                 </button>
                             </div>
@@ -307,7 +395,6 @@ function onCardImageSelected(event) {
     newCardImageFile.value = event.target.files[0]
 }
 
-//在頁面載入時查看登入狀態，若沒登入就導向登入頁面。
 onMounted(async () => {
     const { data: { user } } = await $supabase.auth.getUser()
     if (!user) return navigateTo('/login')
@@ -324,7 +411,6 @@ onMounted(async () => {
     if (data) await fetchLinks()
 })
 
-//獲取連結
 async function fetchLinks() {
     const { data } = await $supabase
         .from('links')
@@ -335,80 +421,53 @@ async function fetchLinks() {
     links.value = data || []
 }
 
-//新增連結
 async function addLink() {
     linkError.value = ''
 
     if (!newTitle.value && newType.value !== 'image') {
-        linkError.value = 'Please enter a title'
+        linkError.value = '請輸入標題'
         return
     }
 
     if (newType.value === 'link') {
-        if (!newUrl.value) {
-            linkError.value = 'Please enter a URL'
-            return
-        }
-        if (!newUrl.value.startsWith('http')) {
-            linkError.value = 'URL must start with http:// or https://'
-            return
-        }
+        if (!newUrl.value) { linkError.value = '請輸入網址'; return }
+        if (!newUrl.value.startsWith('http')) { linkError.value = '網址必須以 http:// 或 https:// 開頭'; return }
     }
 
     if (newType.value === 'youtube') {
         if (!newUrl.value.includes('youtube.com') && !newUrl.value.includes('youtu.be')) {
-            linkError.value = '請輸入有效的 YouTube 網址'
-            return
+            linkError.value = '請輸入有效的 YouTube 網址'; return
         }
     }
 
     if (newType.value === 'image' && !newCardImageFile.value) {
-        linkError.value = '請選擇一張圖片'
-        return
+        linkError.value = '請選擇一張圖片'; return
     }
 
     addingLink.value = true
-
     let finalUrl = newUrl.value
 
-    // 上傳圖片卡片的圖片
     if (newType.value === 'image' && newCardImageFile.value) {
         const file = newCardImageFile.value
         const fileExt = file.name.split('.').pop()
         const fileName = `${profile.value.id}-card-${Date.now()}.${fileExt}`
 
-        const { error: uploadError } = await $supabase.storage
-            .from('backgrounds')
-            .upload(fileName, file)
+        const { error: uploadError } = await $supabase.storage.from('backgrounds').upload(fileName, file)
+        if (uploadError) { linkError.value = '圖片上傳失敗，請再試一次'; addingLink.value = false; return }
 
-        if (uploadError) {
-            linkError.value = '圖片上傳失敗，請再試一次'
-            addingLink.value = false
-            return
-        }
-
-        const { data } = $supabase.storage
-            .from('backgrounds')
-            .getPublicUrl(fileName)
-
+        const { data } = $supabase.storage.from('backgrounds').getPublicUrl(fileName)
         finalUrl = data.publicUrl
     }
 
-    const { error } = await $supabase
-        .from('links')
-        .insert({
-            profile_id: profile.value.id,
-            title: newTitle.value,
-            url: finalUrl,
-            type: newType.value,
-            position: links.value.length
-        })
+    const { error } = await $supabase.from('links').insert({
+        profile_id: profile.value.id,
+        title: newTitle.value,
+        url: finalUrl,
+        type: newType.value,
+        position: links.value.length
+    })
 
-    if (error) {
-        linkError.value = 'Failed to add, please try again'
-        addingLink.value = false
-        return
-    }
+    if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
 
     newTitle.value = ''
     newUrl.value = ''
@@ -418,7 +477,6 @@ async function addLink() {
     await fetchLinks()
 }
 
-//刪除連結
 async function deleteLink(id) {
     await $supabase.from('links').delete().eq('id', id)
     await fetchLinks()
@@ -440,76 +498,47 @@ function closeEdit() {
 async function saveEdit() {
     editError.value = ''
 
-    if (!editTitle.value && editingLink.value.type !== 'image') {
-        editError.value = '請輸入標題'
-        return
-    }
-
-    if (editingLink.value.type === 'link' && !editUrl.value.startsWith('http')) {
-        editError.value = '網址必須以 http:// 或 https:// 開頭'
-        return
-    }
+    if (!editTitle.value && editingLink.value.type !== 'image') { editError.value = '請輸入標題'; return }
+    if (editingLink.value.type === 'link' && !editUrl.value.startsWith('http')) { editError.value = '網址必須以 http:// 或 https:// 開頭'; return }
 
     saving.value = true
 
-    const { error } = await $supabase
-        .from('links')
-        .update({
-            title: editTitle.value,
-            url: editingLink.value.type !== 'image' ? editUrl.value : editingLink.value.url
-        })
-        .eq('id', editingLink.value.id)
+    const { error } = await $supabase.from('links').update({
+        title: editTitle.value,
+        url: editingLink.value.type !== 'image' ? editUrl.value : editingLink.value.url
+    }).eq('id', editingLink.value.id)
 
-    if (error) {
-        editError.value = '儲存失敗，請再試一次'
-        saving.value = false
-        return
-    }
+    if (error) { editError.value = '儲存失敗，請再試一次'; saving.value = false; return }
 
     saving.value = false
     closeEdit()
     await fetchLinks()
 }
 
-//登出帳號
 async function logout() {
     await $supabase.auth.signOut()
     navigateTo('/login')
 }
 
-//取消編輯
 function cancelEditProfile() {
-    editingProfile.value = false    //關閉編輯模式
+    editingProfile.value = false
     editDisplayName.value = profile.value.display_name || ''
     editBio.value = profile.value.bio || ''
     profileError.value = ''
 }
 
-//儲存個人資料名稱和介紹
 async function saveProfile() {
-    profileError.value = ''     //先清空錯誤訊息
+    profileError.value = ''
+    if (!editDisplayName.value) { profileError.value = '請輸入顯示名稱'; return }
 
-    if (!editDisplayName.value) {
-        profileError.value = '請輸入顯示名稱'
-        return
-    }
+    savingProfile.value = true
 
-    savingProfile.value = true  //將按鈕切換到「儲存中...」
+    const { error } = await $supabase.from('profiles').update({
+        display_name: editDisplayName.value,
+        bio: editBio.value
+    }).eq('id', profile.value.id)
 
-    //更新個人檔案名稱及介紹
-    const { error } = await $supabase
-        .from('profiles')
-        .update({
-            display_name: editDisplayName.value,
-            bio: editBio.value
-        })
-        .eq('id', profile.value.id)
-
-    if (error) {
-        profileError.value = '儲存失敗，請再試一次'
-        savingProfile.value = false
-        return
-    }
+    if (error) { profileError.value = '儲存失敗，請再試一次'; savingProfile.value = false; return }
 
     profile.value.display_name = editDisplayName.value
     profile.value.bio = editBio.value
@@ -517,60 +546,79 @@ async function saveProfile() {
     editingProfile.value = false
 }
 
-//上傳大頭貼
 async function uploadAvatar(event) {
     const file = event.target.files[0]
     if (!file) return
 
-    const fileExt = file.name.split('.').pop()   //把原始檔名切成陣列['圖片名稱','jpg']，並取到最後一個index(jpg)
-    const fileName = `${profile.value.id}.${fileExt}` //把profile id和jpg組起來當成檔名，確保每個用戶只有一張頭貼，重複上傳會覆蓋舊的
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${profile.value.id}.${fileExt}`
 
-    const { error } = await $supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true }) //upsert: true，當檔名已經存在時，覆蓋舊的
+    const { error } = await $supabase.storage.from('avatars').upload(fileName, file, { upsert: true })
+    if (error) { console.error(error); return }
 
-    if (error) {
-        console.error(error)
-        return
-    }
-
-    //取得圖片網址
-    const { data } = $supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName)
-
-    //把網址存到資料庫內
-    await $supabase
-        .from('profiles')
-        .update({ avatar_url: data.publicUrl })
-        .eq('id', profile.value.id)
-
+    const { data } = $supabase.storage.from('avatars').getPublicUrl(fileName)
+    await $supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', profile.value.id)
     profile.value.avatar_url = data.publicUrl
 }
 
-//背景顏色選項
 const bgColors = [
-    '#f3e8ff', '#ede9fe', '#dbeafe', '#e0f2fe',
-    '#dcfce7', '#fef9c3', '#ffe4e6', '#f1f5f9',
-    '#1e1b4b', '#0f172a'
+    '#ffffff', '#f8f7f4', '#f5f0eb',
+    '#f3e8ff', '#e9d5ff', '#c4b5fd',
+    '#ede9fe', '#ddd6fe', '#a78bfa',
+    '#dbeafe', '#bfdbfe', '#7dd3fc',
+    '#dcfce7', '#bbf7d0', '#86efac',
+    '#ffe4e6', '#fecdd3', '#fda4af',
+    '#fff7ed', '#fed7aa', '#fdba74',
+    '#fefce8', '#fef08a', '#fde047',
+    '#e8d5c4', '#d4b8a0', '#c9b8a8',
+    '#b8d4d4', '#a8c4c4', '#94b4b4',
+    '#1e1b4b', '#0f172a', '#111827',
+    '#1a0533', '#0c1a2e', '#0d1117',
 ]
+
+const radiusOptions = [
+    { value: 'square', label: '方形' },
+    { value: 'rounded', label: '圓角' },
+    { value: 'pill', label: '膠囊' }
+]
+
+const linkColors = [
+    '#ffffff', '#f0fdf4', '#dcfce7',
+    '#f3e8ff', '#ede9fe', '#ddd6fe',
+    '#dbeafe', '#bfdbfe', '#e0f2fe',
+    '#ffe4e6', '#fecdd3', '#fff7ed',
+    '#fefce8', '#fef08a', '#e8d5c4',
+    '#1e293b', '#0f172a', '#065f46',
+]
+
+//設定連結外框樣式
+async function setLinkRadius(radius) {
+    profile.value.link_radius = radius
+    await $supabase
+        .from('profiles')
+        .update({ link_radius: radius })
+        .eq('id', profile.value.id)
+}
+
+//設定連結顏色
+async function setLinkColor(color) {
+    profile.value.link_color = color
+    await $supabase
+        .from('profiles')
+        .update({ link_color: color })
+        .eq('id', profile.value.id)
+}
 
 //選擇背景類型(圖片、顏色)
 async function setBgType(type) {
     profile.value.bg_type = type
-    await $supabase
-        .from('profiles')
-        .update({ bg_type: type })
-        .eq('id', profile.value.id)
+    await $supabase.from('profiles').update({ bg_type: type }).eq('id', profile.value.id)
 }
 
 //設定背景顏色
 async function setBgColor(color) {
     profile.value.bg_color = color
-    await $supabase
-        .from('profiles')
-        .update({ bg_color: color })
-        .eq('id', profile.value.id)
+    await $supabase.from('profiles').update({ bg_color: color }).eq('id', profile.value.id)
 }
 
 //上傳背景圖片
@@ -581,93 +629,52 @@ async function uploadBgImage(event) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${profile.value.id}-bg.${fileExt}`
 
-    const { error } = await $supabase.storage
-        .from('backgrounds')
-        .upload(fileName, file, { upsert: true })
+    const { error } = await $supabase.storage.from('backgrounds').upload(fileName, file, { upsert: true })
+    if (error) { console.error(error); return }
 
-    if (error) {
-        console.error(error)
-        return
-    }
-
-    const { data } = $supabase.storage
-        .from('backgrounds')
-        .getPublicUrl(fileName)
-
-    await $supabase
-        .from('profiles')
-        .update({ bg_image_url: data.publicUrl })
-        .eq('id', profile.value.id)
-
+    const { data } = $supabase.storage.from('backgrounds').getPublicUrl(fileName)
+    await $supabase.from('profiles').update({ bg_image_url: data.publicUrl }).eq('id', profile.value.id)
     profile.value.bg_image_url = data.publicUrl
 }
 
-//刪除背景圖片
+//移除背景圖片
 async function removeBgImage() {
-    await $supabase
-        .from('profiles')
-        .update({ bg_image_url: null, bg_type: 'color' })
-        .eq('id', profile.value.id)
-
+    await $supabase.from('profiles').update({ bg_image_url: null, bg_type: 'color' }).eq('id', profile.value.id)
     profile.value.bg_image_url = null
     profile.value.bg_type = 'color'
 }
 
 async function onDragEnd() {
-    const updates = links.value.map((link, index) => ({
-        id: link.id,
-        position: index
-    }))
-
+    const updates = links.value.map((link, index) => ({ id: link.id, position: index }))
     for (const update of updates) {
-        await $supabase
-            .from('links')
-            .update({ position: update.position })
-            .eq('id', update.id)
+        await $supabase.from('links').update({ position: update.position }).eq('id', update.id)
     }
 }
 
-//建立個人頁面
+//建立用戶名稱
 async function createProfile() {
     usernameError.value = ''
 
-    if (!username.value) {
-        usernameError.value = '請輸入用戶名稱'
-        return
-    }
-    if (!/^[a-z0-9_]+$/.test(username.value)) {
-        usernameError.value = '只能使用小寫英文、數字和底線'
-        return
-    }
+    if (!username.value) { usernameError.value = '請輸入用戶名稱'; return }
+    if (!/^[a-z0-9_]+$/.test(username.value)) { usernameError.value = '只能使用小寫英文、數字和底線'; return }
 
     saving.value = true
 
     const { data: { user } } = await $supabase.auth.getUser()
 
-    const { error } = await $supabase
-        .from('profiles')
-        .insert({
-            id: user.id,
-            username: username.value,
-            display_name: user.user_metadata.full_name
-        })
+    const { error } = await $supabase.from('profiles').insert({
+        id: user.id,
+        username: username.value,
+        display_name: user.user_metadata.full_name
+    })
 
     if (error) {
-        if (error.code === '23505') {
-            usernameError.value = '這個名稱已經被使用了'
-        } else {
-            usernameError.value = '建立失敗，請再試一次'
-        }
+        usernameError.value = error.code === '23505' ? '這個名稱已經被使用了' : '建立失敗，請再試一次'
         saving.value = false
         return
     }
 
-    const { data } = await $supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-
+    const { data } = await $supabase.from('profiles').select('*').eq('id', user.id).single()
     profile.value = data
     saving.value = false
     await fetchLinks()
