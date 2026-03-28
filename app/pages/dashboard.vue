@@ -49,6 +49,74 @@
                     </button>
                 </div>
             </div>
+            <!-- 個人資料 -->
+            <div class="bg-white rounded-2xl border border-purple-100 p-6 mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-medium text-gray-600">個人資料</h2>
+                    <button v-if="!editingProfile" @click="editingProfile = true"
+                        class="text-xs text-purple-400 hover:text-purple-600 transition">
+                        編輯
+                    </button>
+                </div>
+
+                <!-- 頭貼 -->
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="relative">
+                        <div
+                            class="w-16 h-16 rounded-full bg-purple-100 overflow-hidden flex items-center justify-center">
+                            <img v-if="profile.avatar_url" :src="profile.avatar_url"
+                                class="w-full h-full object-cover" />
+                            <span v-else class="text-xl text-purple-400 font-medium">
+                                {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
+                            </span>
+                        </div>
+                        <label
+                            class="absolute bottom-0 right-0 w-5 h-5 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-purple-700 transition">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            <input type="file" accept="image/*" class="hidden" @change="uploadAvatar" />
+                        </label>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">{{ profile.display_name || profile.username }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">點擊頭貼旁的按鈕更換照片</p>
+                    </div>
+                </div>
+                <!-- 顯示模式 -->
+                <div v-if="!editingProfile">
+                    <p class="text-sm font-medium text-gray-700">{{ profile.display_name || '未設定名稱' }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ profile.bio || '未設定簡介' }}</p>
+                </div>
+
+                <!-- 編輯模式 -->
+                <div v-else class="flex flex-col gap-3">
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">顯示名稱</label>
+                        <input v-model="editDisplayName" type="text" placeholder="你的名字"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300" />
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">個人簡介</label>
+                        <textarea v-model="editBio" placeholder="介紹一下自己..." rows="3"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-300 resize-none" />
+                    </div>
+                    <p v-if="profileError" class="text-xs text-red-400">{{ profileError }}</p>
+                    <div class="flex gap-2">
+                        <button @click="cancelEditProfile"
+                            class="flex-1 border border-gray-200 text-gray-500 rounded-xl py-3 text-sm hover:bg-gray-50 transition">
+                            取消
+                        </button>
+                        <button @click="saveProfile" :disabled="savingProfile"
+                            class="flex-1 bg-purple-600 text-white rounded-xl py-3 text-sm hover:bg-purple-700 transition disabled:opacity-50">
+                            {{ savingProfile ? '儲存中...' : '儲存' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <!-- 背景設定 -->
             <div class="bg-white rounded-2xl border border-purple-100 p-6 mb-4">
                 <h2 class="text-sm font-medium text-gray-600 mb-4">背景設定</h2>
@@ -141,6 +209,7 @@
                                 <div>
                                     <p class="text-sm font-medium text-gray-700">{{ link.title }}</p>
                                     <p class="text-xs text-gray-400 mt-0.5">{{ link.url }}</p>
+                                    <p class="text-xs text-purple-400 mt-1">{{ link.link_clicks[0].count }} 次點擊</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3 ml-4">
@@ -211,6 +280,12 @@ const newCardImageFile = ref(null)
 const linkError = ref('')
 const addingLink = ref(false)
 
+const editingProfile = ref(false)
+const editDisplayName = ref('')
+const editBio = ref('')
+const profileError = ref('')
+const savingProfile = ref(false)
+
 const cardTypes = [
     { value: 'link', label: '連結' },
     { value: 'youtube', label: 'YouTube' },
@@ -253,7 +328,7 @@ onMounted(async () => {
 async function fetchLinks() {
     const { data } = await $supabase
         .from('links')
-        .select('*')
+        .select('*, link_clicks(count)')
         .eq('profile_id', profile.value.id)
         .order('position')
 
@@ -400,6 +475,77 @@ async function saveEdit() {
 async function logout() {
     await $supabase.auth.signOut()
     navigateTo('/login')
+}
+
+//取消編輯
+function cancelEditProfile() {
+    editingProfile.value = false    //關閉編輯模式
+    editDisplayName.value = profile.value.display_name || ''
+    editBio.value = profile.value.bio || ''
+    profileError.value = ''
+}
+
+//儲存個人資料名稱和介紹
+async function saveProfile() {
+    profileError.value = ''     //先清空錯誤訊息
+
+    if (!editDisplayName.value) {
+        profileError.value = '請輸入顯示名稱'
+        return
+    }
+
+    savingProfile.value = true  //將按鈕切換到「儲存中...」
+
+    //更新個人檔案名稱及介紹
+    const { error } = await $supabase
+        .from('profiles')
+        .update({
+            display_name: editDisplayName.value,
+            bio: editBio.value
+        })
+        .eq('id', profile.value.id)
+
+    if (error) {
+        profileError.value = '儲存失敗，請再試一次'
+        savingProfile.value = false
+        return
+    }
+
+    profile.value.display_name = editDisplayName.value
+    profile.value.bio = editBio.value
+    savingProfile.value = false
+    editingProfile.value = false
+}
+
+//上傳大頭貼
+async function uploadAvatar(event) {
+    const file = event.target.files[0]
+    if (!file) return
+
+    const fileExt = file.name.split('.').pop()   //把原始檔名切成陣列['圖片名稱','jpg']，並取到最後一個index(jpg)
+    const fileName = `${profile.value.id}.${fileExt}` //把profile id和jpg組起來當成檔名，確保每個用戶只有一張頭貼，重複上傳會覆蓋舊的
+
+    const { error } = await $supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true }) //upsert: true，當檔名已經存在時，覆蓋舊的
+
+    if (error) {
+        console.error(error)
+        return
+    }
+
+    //取得圖片網址
+    const { data } = $supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+    //把網址存到資料庫內
+    await $supabase
+        .from('profiles')
+        .update({ avatar_url: data.publicUrl })
+        .eq('id', profile.value.id)
+
+    profile.value.avatar_url = data.publicUrl
 }
 
 //背景顏色選項

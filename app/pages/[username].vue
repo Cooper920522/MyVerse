@@ -10,8 +10,10 @@
 
             <!-- 頭像和基本資訊 -->
             <div class="text-center mb-8">
-                <div class="w-20 h-20 rounded-full bg-purple-200 mx-auto mb-3 flex items-center justify-center">
-                    <span class="text-2xl text-purple-600 font-medium">
+                <div
+                    class="w-20 h-20 rounded-full bg-purple-200 mx-auto mb-3 overflow-hidden flex items-center justify-center">
+                    <img v-if="profile.avatar_url" :src="profile.avatar_url" class="w-full h-full object-cover" />
+                    <span v-else class="text-2xl text-purple-600 font-medium">
                         {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
                     </span>
                 </div>
@@ -25,9 +27,12 @@
 
                     <!-- 一般連結 -->
 
+                    <!-- 一般連結 -->
+
                     <a v-if="link.type === 'link' || !link.type" :href="link.url" target="_blank"
                         rel="noopener noreferrer" class="block w-full bg-white border border-purple-100 rounded-2xl px-6 py-4 text-center text-sm
-                    font-medium text-gray-700 hover:bg-purple-50 hover:border-purple-300 transition">
+                    font-medium text-gray-700 hover:bg-purple-50 hover:border-purple-300 transition"
+                        @click="recordClick(link.id)">
                         {{ link.title }}
                     </a>
 
@@ -90,7 +95,7 @@ onMounted(async () => {
     const { data: profileData } = await $supabase
         .from('profiles')
         .select('*')
-        .eq('username', route.params.username)
+        .eq('username', route.params.username)  //從profiles表內查詢值和route.params.username相同的username欄位
         .single()
 
     profile.value = profileData
@@ -116,5 +121,11 @@ function getYoutubeEmbedUrl(url) {
         videoId = url.split('watch?v=')[1].split('&')[0]
     }
     return `https://www.youtube.com/embed/${videoId}`
+}
+
+async function recordClick(linkId) {
+    await $supabase
+        .from('link_clicks')
+        .insert({ link_id: linkId })
 }
 </script>
