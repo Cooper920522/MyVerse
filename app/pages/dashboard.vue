@@ -248,6 +248,23 @@
                         style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
                         onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
                         onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+
+                    <!-- 蝦皮預覽 -->
+                    <div v-if="newType === 'shopee' && shopeePreview" class="rounded-xl overflow-hidden"
+                        style="border: 1px solid rgba(16,185,129,0.2)">
+                        <img v-if="shopeePreview.image" :src="shopeePreview.image" class="w-full h-40 object-cover" />
+                        <div class="p-3">
+                            <p class="text-sm font-medium" style="color: #065f46">{{ shopeePreview.title }}</p>
+                        </div>
+                    </div>
+
+                    <button v-if="newType === 'shopee' && newUrl && !shopeePreview" @click="fetchShopeePreview"
+                        :disabled="fetchingPreview"
+                        class="w-full rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                        style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #059669">
+                        {{ fetchingPreview ? '抓取中...' : '預覽商品' }}
+                    </button>
+
                     <label v-if="newType === 'image'" class="flex items-center gap-2 cursor-pointer">
                         <span class="text-sm font-medium rounded-xl px-4 py-2.5 transition"
                             style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">選擇圖片</span>
@@ -374,25 +391,49 @@ const editBio = ref('')
 const profileError = ref('')
 const savingProfile = ref(false)
 
+const shopeePreview = ref(null)
+const fetchingPreview = ref(false)
+
 const cardTypes = [
     { value: 'link', label: '連結' },
     { value: 'youtube', label: 'YouTube' },
-    { value: 'image', label: '圖片' }
+    { value: 'image', label: '圖片' },
+    { value: 'shopee', label: '蝦皮' }
 ]
 
 const titlePlaceholder = computed(() => {
     if (newType.value === 'youtube') return '影片標題（例如：我的頻道精選）'
     if (newType.value === 'image') return '圖片說明（選填）'
+    if (newType.value === 'shopee') return '商品名稱或說明（例如: 我的精選商品）'
     return '連結名稱（例如：我的 YouTube）'
 })
 
 const urlPlaceholder = computed(() => {
     if (newType.value === 'youtube') return 'YouTube 網址（例如：https://youtube.com/watch?v=...）'
+    if (newType.value === 'shopee') return '蝦皮商品網址（例如：https://shopee.tw/...）'
     return '網址（例如：https://youtube.com/...）'
 })
 
 function onCardImageSelected(event) {
     newCardImageFile.value = event.target.files[0]
+}
+
+//獲取蝦皮商品資訊(呼叫後端API)
+async function fetchShopeePreview() {
+    if (!newUrl.value) return
+    fetchingPreview.value = true
+
+    try {
+        const data = await $fetch('/api/fetch-og', {
+            method: 'POST',
+            body: { url: newUrl.value }
+        })
+        shopeePreview.value = data
+    } catch (e) {
+        linkError.value = '無法抓取商品資訊，請確認網址是否正確'
+    }
+
+    fetchingPreview.value = false
 }
 
 onMounted(async () => {
@@ -440,6 +481,15 @@ async function addLink() {
         }
     }
 
+    if (newType.value === 'shopee') {
+        if (!newUrl.value.includes('shopee.tw')) {
+            linkError.value = '請輸入有效的蝦皮網址'; return
+        }
+        if (!shopeePreview.value) {
+            linkError.value = '請先點擊「預覽商品」'; return
+        }
+    }
+
     if (newType.value === 'image' && !newCardImageFile.value) {
         linkError.value = '請選擇一張圖片'; return
     }
@@ -461,10 +511,11 @@ async function addLink() {
 
     const { error } = await $supabase.from('links').insert({
         profile_id: profile.value.id,
-        title: newTitle.value,
+        title: newTitle.value || shopeePreview.value?.title || '',
         url: finalUrl,
         type: newType.value,
-        position: links.value.length
+        position: links.value.length,
+        thumbnail: newType.value === 'shopee' ? shopeePreview.value?.image : null
     })
 
     if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
@@ -473,6 +524,7 @@ async function addLink() {
     newUrl.value = ''
     newType.value = 'link'
     newCardImageFile.value = null
+    shopeePreview.value = null
     addingLink.value = false
     await fetchLinks()
 }

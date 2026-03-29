@@ -58,6 +58,32 @@
                         </p>
                     </div>
 
+                    <!-- 蝦皮商品卡片 -->
+
+                    <a v-else-if="link.type === 'shopee'"
+                    :href="link.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block w-full overflow-hidden transition hover:opacity-80"
+                    :style="{
+                    backgroundColor: profile.link_color || '#ffffff',
+                    borderRadius: linkRadius
+                    }"
+                    style="border: 1px solid rgba(0,0,0,0.08)"
+                    @click="recordClick(link.id)"
+                    >
+                    <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-40 object-cover" />
+                    <div class="px-5 py-3 flex items-center justify-between gap-3">
+                        <p class="text-sm font-medium flex-1" :class="linkTextClass">
+                            {{ link.title }}
+                        </p>
+                        <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
+                            style="background: #ee4d2d; color: white">
+                            蝦皮
+                        </span>
+                    </div>
+                    </a>
+
                 </template>
             </div>
 
