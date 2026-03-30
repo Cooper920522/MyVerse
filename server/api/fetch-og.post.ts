@@ -1,6 +1,6 @@
 // 接收前端請求
 export default defineEventHandler(async (event) => {    //evnt代表HTTP請求的所有資訊，由Nuxt建立
-    const body = await readBody(event) //readBody把JSON字串轉換成物件
+    const body = await readBody(event) //readBody把前端傳過來的body JSON字串轉換成物件
     const { url } = body //解構賦值，從body裡取出url
 
     if (!url) {

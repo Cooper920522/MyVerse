@@ -3,22 +3,30 @@
         <div v-if="pending" class="text-gray-400 text-sm">Loading...</div>
 
         <div v-else-if="!profile" class="text-gray-400 text-sm">
-            This page does not exist.
+            此頁面不存在
         </div>
 
-        <div v-else class="w-full max-w-sm">
+        <div v-else class="w-full max-w-xs">
 
             <!-- 頭像和基本資訊 -->
-            <div class="text-center mb-8">
-                <div
-                    class="w-20 h-20 rounded-full bg-purple-200 mx-auto mb-3 overflow-hidden flex items-center justify-center">
+            <div class="text-center mb-10">
+                <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center"
+                    style="box-shadow: 0 4px 20px rgba(0,0,0,0.12); border: 3px solid rgba(255,255,255,0.8)">
                     <img v-if="profile.avatar_url" :src="profile.avatar_url" class="w-full h-full object-cover" />
-                    <span v-else class="text-2xl text-purple-600 font-medium">
-                        {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
-                    </span>
+                    <div v-else class="w-full h-full flex items-center justify-center"
+                        style="background: rgba(255,255,255,0.5)">
+                        <span class="text-3xl font-medium" style="color: #374151">
+                            {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
+                        </span>
+                    </div>
                 </div>
-                <h1 class="text-lg font-medium text-gray-800">{{ profile.display_name || profile.username }}</h1>
-                <p v-if="profile.bio" class="text-sm text-gray-400 mt-1">{{ profile.bio }}</p>
+                <h1 class="text-xl font-medium" :style="{ color: profileTextColor }">
+                    {{ profile.display_name || profile.username }}
+                </h1>
+                <p v-if="profile.bio" class="text-sm mt-2 leading-relaxed max-w-xs mx-auto"
+                    :style="{ color: profileSubTextColor }">
+                    {{ profile.bio }}
+                </p>
             </div>
 
             <!-- 卡片清單 -->
@@ -29,16 +37,23 @@
                     <a v-if="link.type === 'link' || !link.type" :href="link.url" target="_blank"
                         rel="noopener noreferrer" :style="{
                             backgroundColor: profile.link_color || '#ffffff',
-                            borderRadius: linkRadius
-                        }" class="block w-full px-6 py-4 text-center text-sm font-medium transition hover:opacity-80"
-                        :class="linkTextClass" style="border: 1px solid rgba(0,0,0,0.08)" @click="recordClick(link.id)">
+                            borderRadius: linkRadius,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                        }"
+                        class="block w-full px-6 py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5 active:translate-y-0"
+                        :class="linkTextClass" style="border: 1px solid rgba(255,255,255,0.6)"
+                        @click="recordClick(link.id)">
                         {{ link.title }}
                     </a>
 
                     <!-- YouTube 影片 -->
-                    <div v-else-if="link.type === 'youtube'"
-                        class="w-full bg-white border border-purple-100 rounded-2xl overflow-hidden">
-                        <p v-if="link.title" class="text-sm font-medium text-gray-700 px-4 py-3 text-center">
+                    <div v-else-if="link.type === 'youtube'" class="w-full overflow-hidden" :style="{
+                        borderRadius: linkRadius,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                        border: '1px solid rgba(255,255,255,0.6)'
+                    }">
+                        <p v-if="link.title" class="text-sm font-medium px-4 py-3 text-center"
+                            style="background: rgba(255,255,255,0.8); color: #374151">
                             {{ link.title }}
                         </p>
                         <div class="relative w-full" style="padding-top: 56.25%">
@@ -50,45 +65,57 @@
                     </div>
 
                     <!-- 圖片 -->
-                    <div v-else-if="link.type === 'image'"
-                        class="w-full bg-white border border-purple-100 rounded-2xl overflow-hidden">
+                    <div v-else-if="link.type === 'image'" class="w-full overflow-hidden" :style="{
+                        borderRadius: linkRadius,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                        border: '1px solid rgba(255,255,255,0.6)'
+                    }">
                         <img :src="link.url" class="w-full object-cover" />
-                        <p v-if="link.title" class="text-sm font-medium text-gray-700 px-4 py-3 text-center">
+                        <p v-if="link.title" class="text-sm font-medium px-4 py-3 text-center"
+                            style="background: rgba(255,255,255,0.8); color: #374151">
                             {{ link.title }}
                         </p>
                     </div>
 
                     <!-- 蝦皮商品卡片 -->
+                    <a v-else-if="link.type === 'shopee'" :href="link.url" target="_blank" rel="noopener noreferrer"
+                        class="block w-full overflow-hidden transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
+                        :style="{
+                            backgroundColor: profile.link_color || '#ffffff',
+                            borderRadius: linkRadius,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            border: '1px solid rgba(255,255,255,0.6)'
+                        }" @click="recordClick(link.id)">
+                        <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-40 object-cover" />
+                        <div class="px-5 py-3 flex items-center justify-between gap-3">
+                            <p class="text-sm font-medium flex-1" :class="linkTextClass">{{ link.title }}</p>
+                            <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
+                                style="background: #ee4d2d; color: white">蝦皮</span>
+                        </div>
+                    </a>
 
-                    <a v-else-if="link.type === 'shopee'"
-                    :href="link.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="block w-full overflow-hidden transition hover:opacity-80"
-                    :style="{
-                    backgroundColor: profile.link_color || '#ffffff',
-                    borderRadius: linkRadius
-                    }"
-                    style="border: 1px solid rgba(0,0,0,0.08)"
-                    @click="recordClick(link.id)"
-                    >
-                    <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-40 object-cover" />
-                    <div class="px-5 py-3 flex items-center justify-between gap-3">
-                        <p class="text-sm font-medium flex-1" :class="linkTextClass">
-                            {{ link.title }}
-                        </p>
-                        <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
-                            style="background: #ee4d2d; color: white">
-                            蝦皮
-                        </span>
-                    </div>
+                    <!-- LINE 加好友 -->
+                    <a v-else-if="link.type === 'line'" :href="link.url" target="_blank" rel="noopener noreferrer"
+                        class="block w-full py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
+                        :style="{
+                            borderRadius: linkRadius,
+                            boxShadow: '0 2px 8px rgba(6,199,85,0.25)'
+                        }" style="background: #06C755; color: white;" @click="recordClick(link.id)">
+                        <div class="flex items-center justify-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11.5h-3.5V17h-3v-3.5H7v-3h3.5V7h3v3.5H17v3z" />
+                            </svg>
+                            {{ link.title || '加入 LINE 好友' }}
+                        </div>
                     </a>
 
                 </template>
             </div>
 
             <!-- 頁腳 -->
-            <p class="text-center text-xs text-gray-300 mt-10">
+            <p class="text-center text-xs mt-12"
+                :style="{ color: isDarkBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)' }">
                 Powered by Myverse
             </p>
 
@@ -160,8 +187,8 @@ onMounted(async () => {
             .from('links')
             .select('*')
             .eq('profile_id', profileData.id)
+            .neq('is_visible', false)
             .order('position')
-
         links.value = linksData || []
     }
 
@@ -189,6 +216,29 @@ const linkTextClass = computed(() => {
     // 深色背景用白色文字，淺色背景用深色文字
     const dark = ['#1e293b', '#0f172a', '#065f46']
     return dark.includes(color) ? 'text-white' : 'text-gray-700'
+})
+
+const isDarkBg = computed(() => {
+    const color = profile.value?.bg_color || '#f3e8ff'
+    if (profile.value?.bg_type === 'image') return false
+
+    // 把 hex 顏色轉成 RGB，計算亮度
+    const hex = color.replace('#', '')
+    const r = parseInt(hex.substring(0, 2), 16)
+    const g = parseInt(hex.substring(2, 4), 16)
+    const b = parseInt(hex.substring(4, 6), 16)
+
+    // 亮度公式（人眼對綠色最敏感）
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000
+    return brightness < 128
+})
+
+const profileTextColor = computed(() => {
+    return isDarkBg.value ? 'rgba(255,255,255,0.9)' : '#1f2937'
+})
+
+const profileSubTextColor = computed(() => {
+    return isDarkBg.value ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'
 })
 
 async function recordClick(linkId) {

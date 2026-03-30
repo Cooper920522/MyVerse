@@ -161,7 +161,7 @@ npm install
 SUPABASE_URL=你的 Supabase Project URL
 SUPABASE_KEY=你的 Supabase Publishable Key
 ```
-
+gi
 **4. 啟動開發伺服器**
 ```bash
 npm run dev
