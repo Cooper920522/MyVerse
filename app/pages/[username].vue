@@ -40,12 +40,19 @@
                             borderRadius: linkRadius,
                             boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
                         }"
-                        class="block w-full px-6 py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5 active:translate-y-0"
+                        class="block w-full px-6 py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
                         :class="linkTextClass" style="border: 1px solid rgba(255,255,255,0.6)"
                         @click="recordClick(link.id)">
                         {{ link.title }}
+                        <div v-if="link.expires_at && getCountdown(link.expires_at)"
+                            class="flex items-center justify-center gap-1.5 mt-2 px-3 py-1.5 rounded-full mx-auto w-fit"
+                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                            <span style="font-size: 13px">⏰</span>
+                            <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
+                                限時優惠倒數 {{ getCountdown(link.expires_at) }}
+                            </span>
+                        </div>
                     </a>
-
                     <!-- YouTube 影片 -->
                     <div v-else-if="link.type === 'youtube'" class="w-full overflow-hidden" :style="{
                         borderRadius: linkRadius,
@@ -88,7 +95,17 @@
                         }" @click="recordClick(link.id)">
                         <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-40 object-cover" />
                         <div class="px-5 py-3 flex items-center justify-between gap-3">
-                            <p class="text-sm font-medium flex-1" :class="linkTextClass">{{ link.title }}</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium" :class="linkTextClass">{{ link.title }}</p>
+                                <div v-if="link.expires_at && getCountdown(link.expires_at)"
+                                    class="flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-full w-fit"
+                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                                    <span style="font-size: 13px">⏰</span>
+                                    <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
+                                        限時優惠倒數 {{ getCountdown(link.expires_at) }}
+                                    </span>
+                                </div>
+                            </div>
                             <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
                                 style="background: #ee4d2d; color: white">蝦皮</span>
                         </div>
@@ -121,9 +138,21 @@
                         <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-36 object-cover" />
                         <div class="px-4 py-3 flex items-center justify-between gap-3"
                             :style="{ backgroundColor: profile.link_color || '#ffffff' }">
-                            <p class="text-sm font-medium flex-1 truncate" :class="linkTextClass">
-                                {{ link.title }}
-                            </p>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium truncate" :class="linkTextClass">{{ link.title }}</p>
+                                <div v-if="link.expires_at && getCountdown(link.expires_at)"
+                                    class="flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-full w-fit"
+                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                                    <span style="font-size: 13px">⏰</span>
+                                    <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
+                                        限時優惠倒數 {{ getCountdown(link.expires_at) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
+                                style="background: #e8554e; color: white">
+                                Pressplay
+                            </span>
                         </div>
                     </a>
 
@@ -159,6 +188,28 @@ const bgStyle = computed(() => {
     }
     return { backgroundColor: profile.value.bg_color || '#f3e8ff' }
 })
+
+const now = ref(new Date())
+
+onMounted(() => {
+    setInterval(() => {
+        now.value = new Date()
+    }, 1000)
+})
+
+function getCountdown(expiresAt) {
+    const diff = new Date(expiresAt) - now.value
+    if (diff <= 0) return null
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+    if (days > 0) return `${days} 天 ${hours} 時 ${minutes} 分 ${seconds} 秒`
+    if (hours > 0) return `${hours} 時 ${minutes} 分 ${seconds} 秒`
+    return `${minutes} 分 ${seconds} 秒`
+}
 
 useHead({
     title: () => profile.value ? `${profile.value.display_name || profile.value.username} | Myverse` : 'Myverse',
@@ -206,7 +257,13 @@ onMounted(async () => {
             .eq('profile_id', profileData.id)
             .neq('is_visible', false)
             .order('position')
-        links.value = linksData || []
+
+        // 過濾掉已到期的連結
+        const now = new Date()
+        links.value = (linksData || []).filter(link => {
+            if (!link.expires_at) return true
+            return new Date(link.expires_at) > now
+        })
     }
 
     if (profileData) {

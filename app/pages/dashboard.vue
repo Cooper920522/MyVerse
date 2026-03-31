@@ -347,6 +347,19 @@
                                     newCardImageFile.name
                                     }}</span>
                             </label>
+                            <!-- 限時優惠設定 -->
+                            <div v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay'"
+                                class="flex flex-col gap-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" v-model="hasExpiry" class="rounded" />
+                                    <span class="text-xs font-medium" style="color: #6b7280">設定限時優惠到期時間</span>
+                                </label>
+                                <input v-if="hasExpiry" v-model="expiresAt" type="datetime-local"
+                                    class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                                    style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                                    onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                                    onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+                            </div>
                             <p v-if="linkError" class="text-xs" style="color: #ef4444">{{ linkError }}</p>
                             <button @click="addLink" :disabled="addingLink"
                                 class="w-full text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
@@ -391,6 +404,10 @@
                                             <p class="text-xs mt-0.5 truncate" style="color: #6b7280">{{ link.url }}</p>
                                             <p class="text-xs mt-1 font-medium" style="color: #059669">{{
                                                 link.link_clicks[0].count }} 次點擊</p>
+                                            <p v-if="link.expires_at" class="text-xs mt-0.5"
+                                                :style="new Date(link.expires_at) < new Date() ? 'color: #ef4444' : 'color: #f59e0b'">
+                                                {{ new Date(link.expires_at) < new Date() ? '已到期' : '到期：' + new
+                                                    Date(link.expires_at).toLocaleString('zh-TW') }} </p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-3 ml-4 flex-shrink-0">
@@ -429,6 +446,19 @@
                                         style="background: #f0fdf4; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
                                         onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
                                         onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+                                    <!-- 限時優惠設定 -->
+                                    <div v-if="editingLink.type === 'link' || editingLink.type === 'shopee' || editingLink.type === 'pressplay'"
+                                        class="flex flex-col gap-2">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" v-model="editHasExpiry" class="rounded" />
+                                            <span class="text-xs font-medium" style="color: #6b7280">設定限時優惠到期時間</span>
+                                        </label>
+                                        <input v-if="editHasExpiry" v-model="editExpiresAt" type="datetime-local"
+                                            class="w-full rounded-xl px-4 py-3 text-sm outline-none transition"
+                                            style="background: #f0fdf4; border: 1px solid rgba(16,185,129,0.25); color: #065f46"
+                                            onfocus="this.style.borderColor='rgba(5,150,105,0.5)'"
+                                            onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
+                                    </div>
                                     <p v-if="editError" class="text-xs" style="color: #ef4444">{{ editError }}</p>
                                     <div class="flex gap-2">
                                         <button @click="closeEdit"
@@ -495,6 +525,15 @@
                                                     borderRadius: previewLinkRadius
                                                 }" style="border: 1px solid rgba(0,0,0,0.08)">
                                                 <span :class="linkTextClass">{{ link.title }}</span>
+                                                <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
+                                                    class="flex items-center justify-center gap-1 mt-1.5 px-2 py-1 rounded-full mx-auto w-fit"
+                                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                                                    <span style="font-size: 11px">⏰</span>
+                                                    <span
+                                                        style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
+                                                        限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
+                                                    </span>
+                                                </div>
                                             </div>
 
                                             <!-- YouTube -->
@@ -535,8 +574,19 @@
                                                 <img v-if="link.thumbnail" :src="link.thumbnail"
                                                     class="w-full object-cover" style="max-height: 80px" />
                                                 <div class="px-3 py-2 flex items-center justify-between gap-2">
-                                                    <p class="text-xs font-medium flex-1 truncate"
-                                                        :class="linkTextClass">{{ link.title }}</p>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-medium truncate" :class="linkTextClass">
+                                                            {{ link.title }}</p>
+                                                        <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
+                                                            class="flex items-center gap-1 mt-1 px-2 py-1 rounded-full w-fit"
+                                                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                                                            <span style="font-size: 11px">⏰</span>
+                                                            <span
+                                                                style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
+                                                                限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                     <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
                                                         style="background: #ee4d2d; color: white">蝦皮</span>
                                                 </div>
@@ -562,10 +612,25 @@
                                                     class="w-full object-cover" style="max-height: 80px" />
                                                 <div class="px-3 py-2 flex items-center justify-between gap-2"
                                                     :style="{ backgroundColor: profile.link_color || '#ffffff' }">
-                                                    <p class="text-xs font-medium flex-1 truncate"
-                                                        :class="linkTextClass">{{ link.title }}</p>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-xs font-medium truncate" :class="linkTextClass">
+                                                            {{ link.title }}</p>
+                                                        <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
+                                                            class="flex items-center gap-1 mt-1 px-2 py-1 rounded-full w-fit"
+                                                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
+                                                            <span style="font-size: 11px">⏰</span>
+                                                            <span
+                                                                style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
+                                                                限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
+                                                        style="background: #e8554e; color: white">Pressplay</span>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </template>
                                 </div>
@@ -617,6 +682,12 @@ const newType = ref('link')
 const newCardImageFile = ref(null)
 const linkError = ref('')
 const addingLink = ref(false)
+
+const hasExpiry = ref(false)
+const expiresAt = ref('')
+
+const editHasExpiry = ref(false)
+const editExpiresAt = ref('')
 
 const editingProfile = ref(false)
 const editDisplayName = ref('')
@@ -710,6 +781,28 @@ const previewProfileTextColor = computed(() => {
 const previewProfileSubTextColor = computed(() => {
     return previewIsDarkBg.value ? 'rgba(255,255,255,0.6)' : '#6b7280'
 })
+
+const previewNow = ref(new Date())
+
+onMounted(() => {
+    setInterval(() => {
+        previewNow.value = new Date()
+    }, 1000)
+})
+
+function getPreviewCountdown(expiresAt) {
+    const diff = new Date(expiresAt) - previewNow.value
+    if (diff <= 0) return null
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+    if (days > 0) return `${days} 天 ${hours} 時 ${minutes} 分 ${seconds} 秒`
+    if (hours > 0) return `${hours} 時 ${minutes} 分 ${seconds} 秒`
+    return `${minutes} 分 ${seconds} 秒`
+}
 
 function onCardImageSelected(event) {
     newCardImageFile.value = event.target.files[0]
@@ -887,7 +980,8 @@ async function addLink() {
             ? shopeePreview.value?.image
             : newType.value === 'pressplay'
                 ? pressplayPreview.value?.image
-                : null
+                : null,
+        expires_at: hasExpiry.value && expiresAt.value ? new Date(expiresAt.value).toISOString() : null
     })
 
     if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
@@ -899,6 +993,8 @@ async function addLink() {
     shopeePreview.value = null
     pressplayPreview.value = null
     addingLink.value = false
+    hasExpiry.value = false
+    expiresAt.value = ''
     await fetchLinks()
 }
 
@@ -935,6 +1031,10 @@ function openEdit(link) {
     editingLink.value = link
     editTitle.value = link.title
     editUrl.value = link.url
+    editHasExpiry.value = !!link.expires_at
+    editExpiresAt.value = link.expires_at
+        ? new Date(link.expires_at).toISOString().slice(0, 16)
+        : ''
 }
 
 //關閉編輯狀態
@@ -943,6 +1043,8 @@ function closeEdit() {
     editTitle.value = ''
     editUrl.value = ''
     editError.value = ''
+    editHasExpiry.value = false
+    editExpiresAt.value = ''
 }
 
 //儲存編輯
@@ -956,7 +1058,10 @@ async function saveEdit() {
 
     const { error } = await $supabase.from('links').update({
         title: editTitle.value,
-        url: editingLink.value.type !== 'image' ? editUrl.value : editingLink.value.url
+        url: editingLink.value.type !== 'image' ? editUrl.value : editingLink.value.url,
+        expires_at: editHasExpiry.value && editExpiresAt.value
+            ? new Date(editExpiresAt.value).toISOString()
+            : null
     }).eq('id', editingLink.value.id)
 
     if (error) { editError.value = '儲存失敗，請再試一次'; saving.value = false; return }
