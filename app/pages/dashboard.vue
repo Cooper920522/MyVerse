@@ -78,7 +78,7 @@
                     </div>
 
                     <!-- 統計儀表板 -->
-                    <div class="grid grid-cols-3 gap-3 mb-4">
+                    <div class="grid grid-cols-5 gap-3 mb-4">
                         <div class="rounded-2xl p-4 text-center"
                             style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
                             <p class="text-2xl font-medium" style="color: #065f46">{{ stats.total }}</p>
@@ -93,6 +93,16 @@
                             style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
                             <p class="text-2xl font-medium" style="color: #065f46">{{ links.length }}</p>
                             <p class="text-xs mt-1" style="color: #6b7280">連結數量</p>
+                        </div>
+                        <div class="rounded-2xl p-4 text-center"
+                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.totalViews }}</p>
+                            <p class="text-xs mt-1" style="color: #6b7280">總訪客數</p>
+                        </div>
+                        <div class="rounded-2xl p-4 text-center"
+                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
+                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.todayViews }}</p>
+                            <p class="text-xs mt-1" style="color: #6b7280">今日訪客</p>
                         </div>
                     </div>
 
@@ -304,11 +314,29 @@
                                 </div>
                             </div>
 
-                            <button v-if="newType === 'shopee' && newUrl && !shopeePreview" @click="fetchShopeePreview"
-                                :disabled="fetchingPreview"
+                            <!-- Pressplay 預覽 -->
+                            <div v-if="newType === 'pressplay' && pressplayPreview" class="rounded-xl overflow-hidden"
+                                style="border: 1px solid rgba(16,185,129,0.2)">
+                                <img v-if="pressplayPreview.image" :src="pressplayPreview.image"
+                                    class="w-full h-40 object-cover" />
+                                <div class="p-3">
+                                    <p class="text-sm font-medium" style="color: #065f46">{{ pressplayPreview.title }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button v-if="newType === 'pressplay' && newUrl && !pressplayPreview"
+                                @click="fetchPressplayPreview" :disabled="fetchingPressplayPreview"
                                 class="w-full rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
                                 style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #059669">
-                                {{ fetchingPreview ? '抓取中...' : '預覽商品' }}
+                                {{ fetchingPressplayPreview ? '抓取中...' : '預覽課程' }}
+                            </button>
+
+                            <button v-if="newType === 'shopee' && newUrl && !shopeePreview" @click="fetchShopeePreview"
+                                :disabled="fetchingShopeePreview"
+                                class="w-full rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
+                                style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #059669">
+                                {{ fetchingShopeePreview ? '抓取中...' : '預覽商品' }}
                             </button>
 
                             <label v-if="newType === 'image'" class="flex items-center gap-2 cursor-pointer">
@@ -526,6 +554,18 @@
                                                     {{ link.title || '加入 LINE 好友' }}
                                                 </div>
                                             </div>
+
+                                            <!-- Pressplay -->
+                                            <div v-else-if="link.type === 'pressplay'" class="w-full overflow-hidden"
+                                                :style="{ borderRadius: previewLinkRadius }">
+                                                <img v-if="link.thumbnail" :src="link.thumbnail"
+                                                    class="w-full object-cover" style="max-height: 80px" />
+                                                <div class="px-3 py-2 flex items-center justify-between gap-2"
+                                                    :style="{ backgroundColor: profile.link_color || '#ffffff' }">
+                                                    <p class="text-xs font-medium flex-1 truncate"
+                                                        :class="linkTextClass">{{ link.title }}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>
@@ -584,10 +624,13 @@ const editBio = ref('')
 const profileError = ref('')
 const savingProfile = ref(false)
 
-const stats = ref({ total: 0, today: 0 })
+const stats = ref({ total: 0, today: 0, totalViews: 0, todayViews: 0 })
 
 const shopeePreview = ref(null)
-const fetchingPreview = ref(false)
+const fetchingShopeePreview = ref(false)
+
+const pressplayPreview = ref(null)
+const fetchingPressplayPreview = ref(false)
 
 const copied = ref(false)
 
@@ -596,7 +639,8 @@ const cardTypes = [
     { value: 'youtube', label: 'YouTube' },
     { value: 'image', label: '圖片' },
     { value: 'shopee', label: '蝦皮' },
-    { value: 'line', label: 'LINE' }
+    { value: 'line', label: 'LINE' },
+    { value: 'pressplay', label: 'Pressplay' }
 ]
 
 const titlePlaceholder = computed(() => {
@@ -604,6 +648,7 @@ const titlePlaceholder = computed(() => {
     if (newType.value === 'image') return '圖片說明（選填）'
     if (newType.value === 'shopee') return '商品名稱或說明（例如: 我的精選商品）'
     if (newType.value === 'line') return '按鈕文字（例如：加我的 LINE）'
+    if (newType.value === 'pressplay') return '課程名稱或說明(選填)'
     return '連結名稱（例如：我的 YouTube）'
 })
 
@@ -611,6 +656,7 @@ const urlPlaceholder = computed(() => {
     if (newType.value === 'youtube') return 'YouTube 網址（例如：https://youtube.com/watch?v=...）'
     if (newType.value === 'shopee') return '蝦皮商品網址（例如：https://shopee.tw/...）'
     if (newType.value === 'line') return 'LINE 連結（例如：https://line.me/ti/p/...）'
+    if (newType.value === 'pressplay') return 'Pressplay 課程網址（例如：https://www.pressplay.cc/...）'
     return '網址（例如：https://youtube.com/...）'
 
 })
@@ -672,7 +718,7 @@ function onCardImageSelected(event) {
 //獲取蝦皮商品資訊(呼叫後端API)
 async function fetchShopeePreview() {
     if (!newUrl.value) return
-    fetchingPreview.value = true
+    fetchingShopeePreview.value = true
 
     try {
         const data = await $fetch('/api/fetch-og', {
@@ -684,7 +730,24 @@ async function fetchShopeePreview() {
         linkError.value = '無法抓取商品資訊，請確認網址是否正確'
     }
 
-    fetchingPreview.value = false
+    fetchingShopeePreview.value = false
+}
+
+async function fetchPressplayPreview() {
+    if (!newUrl.value) return
+    fetchingPressplayPreview.value = true
+
+    try {
+        const data = await $fetch('/api/fetch-og', {
+            method: 'POST',
+            body: { url: newUrl.value }
+        })
+        pressplayPreview.value = data
+    } catch (e) {
+        linkError.value = '無法抓取課程資訊，請確認網址是否正確'
+    }
+
+    fetchingPressplayPreview.value = false
 }
 
 onMounted(async () => {
@@ -730,9 +793,25 @@ async function fetchStats() {
         .in('link_id', links.value.map(l => l.id)) //只計算該用戶的連結的點擊紀錄，將連結陣列轉成id陣列
         .gte('clicked_at', today.toISOString())
 
+    const { count: totalViews } = await $supabase
+        .from('page_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', profile.value.id)
+
+    const today2 = new Date()
+    today2.setHours(0, 0, 0, 0)
+
+    const { count: todayViews } = await $supabase
+        .from('page_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', profile.value.id)
+        .gte('viewed_at', today2.toISOString())
+
     stats.value = {
         total: total || 0,
-        today: todayCount || 0
+        today: todayCount || 0,
+        totalViews: totalViews || 0,
+        todayViews: todayViews || 0
     }
 }
 
@@ -768,6 +847,15 @@ async function addLink() {
         }
     }
 
+    if (newType.value === 'pressplay') {
+        if (!newUrl.value.includes('pressplay.cc')) {
+            linkError.value = '請輸入有效的 Pressplay 網址'; return
+        }
+        if (!pressplayPreview.value) {
+            linkError.value = '請先點擊「預覽課程」'; return
+        }
+    }
+
     if (newType.value === 'line') {
         if (!newUrl.value.includes('line.me') && !newUrl.value.includes('lin.ee')) {
             linkError.value = '請輸入有效的 LINE 連結'; return
@@ -791,11 +879,15 @@ async function addLink() {
 
     const { error } = await $supabase.from('links').insert({
         profile_id: profile.value.id,
-        title: newTitle.value || shopeePreview.value?.title || '',
+        title: newTitle.value || shopeePreview.value?.title || pressplayPreview.value?.title || '',
         url: finalUrl,
         type: newType.value,
         position: links.value.length,
-        thumbnail: newType.value === 'shopee' ? shopeePreview.value?.image : null
+        thumbnail: newType.value === 'shopee'
+            ? shopeePreview.value?.image
+            : newType.value === 'pressplay'
+                ? pressplayPreview.value?.image
+                : null
     })
 
     if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
@@ -805,6 +897,7 @@ async function addLink() {
     newType.value = 'link'
     newCardImageFile.value = null
     shopeePreview.value = null
+    pressplayPreview.value = null
     addingLink.value = false
     await fetchLinks()
 }

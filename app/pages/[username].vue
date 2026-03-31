@@ -110,6 +110,23 @@
                         </div>
                     </a>
 
+                    <!-- Pressplay 訂閱卡片 -->
+                    <a v-else-if="link.type === 'pressplay'" :href="link.url" target="_blank" rel="noopener noreferrer"
+                        class="block w-full overflow-hidden transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
+                        :style="{
+                            borderRadius: linkRadius,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                            border: '1px solid rgba(255,255,255,0.6)'
+                        }" @click="recordClick(link.id)">
+                        <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-36 object-cover" />
+                        <div class="px-4 py-3 flex items-center justify-between gap-3"
+                            :style="{ backgroundColor: profile.link_color || '#ffffff' }">
+                            <p class="text-sm font-medium flex-1 truncate" :class="linkTextClass">
+                                {{ link.title }}
+                            </p>
+                        </div>
+                    </a>
+
                 </template>
             </div>
 
@@ -190,6 +207,12 @@ onMounted(async () => {
             .neq('is_visible', false)
             .order('position')
         links.value = linksData || []
+    }
+
+    if (profileData) {
+        await $supabase
+            .from('page_views')
+            .insert({ profile_id: profileData.id })
     }
 
     pending.value = false
