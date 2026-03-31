@@ -44,14 +44,8 @@
                         :class="linkTextClass" style="border: 1px solid rgba(255,255,255,0.6)"
                         @click="recordClick(link.id)">
                         {{ link.title }}
-                        <div v-if="link.expires_at && getCountdown(link.expires_at)"
-                            class="flex items-center justify-center gap-1.5 mt-2 px-3 py-1.5 rounded-full mx-auto w-fit"
-                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                            <span style="font-size: 13px">⏰</span>
-                            <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
-                                限時優惠倒數 {{ getCountdown(link.expires_at) }}
-                            </span>
-                        </div>
+                        <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" :center="true"
+                            class="mt-2" />
                     </a>
                     <!-- YouTube 影片 -->
                     <div v-else-if="link.type === 'youtube'" class="w-full overflow-hidden" :style="{
@@ -97,14 +91,7 @@
                         <div class="px-5 py-3 flex items-center justify-between gap-3">
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium" :class="linkTextClass">{{ link.title }}</p>
-                                <div v-if="link.expires_at && getCountdown(link.expires_at)"
-                                    class="flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-full w-fit"
-                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                                    <span style="font-size: 13px">⏰</span>
-                                    <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
-                                        限時優惠倒數 {{ getCountdown(link.expires_at) }}
-                                    </span>
-                                </div>
+                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" class="mt-1" />
                             </div>
                             <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
                                 style="background: #ee4d2d; color: white">蝦皮</span>
@@ -140,14 +127,7 @@
                             :style="{ backgroundColor: profile.link_color || '#ffffff' }">
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium truncate" :class="linkTextClass">{{ link.title }}</p>
-                                <div v-if="link.expires_at && getCountdown(link.expires_at)"
-                                    class="flex items-center gap-1.5 mt-1.5 px-3 py-1.5 rounded-full w-fit"
-                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                                    <span style="font-size: 13px">⏰</span>
-                                    <span class="font-black tracking-wide" style="color: #ef4444; font-size: 13px">
-                                        限時優惠倒數 {{ getCountdown(link.expires_at) }}
-                                    </span>
-                                </div>
+                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" class="mt-1" />
                             </div>
                             <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
                                 style="background: #e8554e; color: white">

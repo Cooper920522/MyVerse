@@ -525,15 +525,8 @@
                                                     borderRadius: previewLinkRadius
                                                 }" style="border: 1px solid rgba(0,0,0,0.08)">
                                                 <span :class="linkTextClass">{{ link.title }}</span>
-                                                <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
-                                                    class="flex items-center justify-center gap-1 mt-1.5 px-2 py-1 rounded-full mx-auto w-fit"
-                                                    style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                                                    <span style="font-size: 11px">⏰</span>
-                                                    <span
-                                                        style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
-                                                        限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
-                                                    </span>
-                                                </div>
+                                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at"
+                                                    :center="true" class="mt-1.5" />
                                             </div>
 
                                             <!-- YouTube -->
@@ -577,15 +570,8 @@
                                                     <div class="flex-1 min-w-0">
                                                         <p class="text-xs font-medium truncate" :class="linkTextClass">
                                                             {{ link.title }}</p>
-                                                        <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
-                                                            class="flex items-center gap-1 mt-1 px-2 py-1 rounded-full w-fit"
-                                                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                                                            <span style="font-size: 11px">⏰</span>
-                                                            <span
-                                                                style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
-                                                                限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
-                                                            </span>
-                                                        </div>
+                                                        <CountdownBadge v-if="link.expires_at"
+                                                            :expires-at="link.expires_at" class="mt-1" />
                                                     </div>
                                                     <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
                                                         style="background: #ee4d2d; color: white">蝦皮</span>
@@ -615,15 +601,8 @@
                                                     <div class="flex-1 min-w-0">
                                                         <p class="text-xs font-medium truncate" :class="linkTextClass">
                                                             {{ link.title }}</p>
-                                                        <div v-if="link.expires_at && getPreviewCountdown(link.expires_at)"
-                                                            class="flex items-center gap-1 mt-1 px-2 py-1 rounded-full w-fit"
-                                                            style="background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25)">
-                                                            <span style="font-size: 11px">⏰</span>
-                                                            <span
-                                                                style="font-size: 11px; font-weight: 900; color: #ef4444; letter-spacing: 0.03em">
-                                                                限時優惠倒數 {{ getPreviewCountdown(link.expires_at) }}
-                                                            </span>
-                                                        </div>
+                                                        <CountdownBadge v-if="link.expires_at"
+                                                            :expires-at="link.expires_at" class="mt-1" />
                                                     </div>
                                                     <span
                                                         class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
@@ -781,28 +760,6 @@ const previewProfileTextColor = computed(() => {
 const previewProfileSubTextColor = computed(() => {
     return previewIsDarkBg.value ? 'rgba(255,255,255,0.6)' : '#6b7280'
 })
-
-const previewNow = ref(new Date())
-
-onMounted(() => {
-    setInterval(() => {
-        previewNow.value = new Date()
-    }, 1000)
-})
-
-function getPreviewCountdown(expiresAt) {
-    const diff = new Date(expiresAt) - previewNow.value
-    if (diff <= 0) return null
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-    if (days > 0) return `${days} 天 ${hours} 時 ${minutes} 分 ${seconds} 秒`
-    if (hours > 0) return `${hours} 時 ${minutes} 分 ${seconds} 秒`
-    return `${minutes} 分 ${seconds} 秒`
-}
 
 function onCardImageSelected(event) {
     newCardImageFile.value = event.target.files[0]
