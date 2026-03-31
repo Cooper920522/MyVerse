@@ -180,7 +180,7 @@ onMounted(async () => {
         .eq('username', route.params.username)  //從profiles表內查詢值和route.params.username相同的username欄位
         .single()
 
-    profile.value = profileData
+    profile.value = profileData //找到後將profileData(也就是profiles表的data)的資料存到profile
 
     if (profileData) {
         const { data: linksData } = await $supabase

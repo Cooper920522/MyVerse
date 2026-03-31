@@ -56,6 +56,14 @@
                                 style="color: #059669">
                                 查看我的頁面 →
                             </a>
+
+                            <button @click="copyProfileUrl"
+                                class="text-sm font-medium transition px-3 py-1.5 rounded-lg" :style="copied
+                                    ? 'background: rgba(5,150,105,0.15); color: #059669'
+                                    : 'background: rgba(5,150,105,0.08); color: #059669'">
+                                {{ copied ? '✓ 已複製' : '分享連結' }}
+                            </button>
+
                             <button @click="logout" class="text-sm transition" style="color: #6b7280">
                                 登出
                             </button>
@@ -581,6 +589,8 @@ const stats = ref({ total: 0, today: 0 })
 const shopeePreview = ref(null)
 const fetchingPreview = ref(false)
 
+const copied = ref(false)
+
 const cardTypes = [
     { value: 'link', label: '連結' },
     { value: 'youtube', label: 'YouTube' },
@@ -869,7 +879,6 @@ async function logout() {
     navigateTo('/login')
 }
 
-
 //取消編輯個人資料
 function cancelEditProfile() {
     editingProfile.value = false
@@ -918,6 +927,13 @@ async function uploadAvatar(event) {
     await $supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', profile.value.id)
     profile.value.avatar_url = data.publicUrl
     uploadingAvatar.value = false
+}
+
+async function copyProfileUrl() {
+    const url = `${window.location.origin}/${profile.value.username}`
+    await navigator.clipboard.writeText(url)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 2000)
 }
 
 const bgColors = [
