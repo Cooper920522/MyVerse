@@ -46,24 +46,22 @@
                 <div class="flex flex-col gap-4">
 
                     <!-- 標題列 -->
-                    <div class="flex items-center justify-between mb-8">
+                    <div class="flex flex-col gap-3 mb-8 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h1 class="text-xl font-medium" style="color: #065f46">Myverse</h1>
                             <p class="text-sm mt-0.5" style="color: #6b7280">myverse.me/{{ profile.username }}</p>
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3 flex-wrap">
                             <a :href="`/${profile.username}`" target="_blank" class="text-sm font-medium transition"
                                 style="color: #059669">
                                 查看我的頁面 →
                             </a>
-
                             <button @click="copyProfileUrl"
                                 class="text-sm font-medium transition px-3 py-1.5 rounded-lg" :style="copied
                                     ? 'background: rgba(5,150,105,0.15); color: #059669'
                                     : 'background: rgba(5,150,105,0.08); color: #059669'">
                                 {{ copied ? '✓ 已複製' : '分享連結' }}
                             </button>
-
                             <button @click="logout" class="text-sm transition" style="color: #6b7280">
                                 登出
                             </button>
@@ -78,7 +76,7 @@
                     </div>
 
                     <!-- 統計儀表板 -->
-                    <div class="grid grid-cols-5 gap-3 mb-4">
+                    <div class="grid grid-cols-3 gap-3 mb-4 lg:grid-cols-5">
                         <div class="rounded-2xl p-4 text-center"
                             style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
                             <p class="text-2xl font-medium" style="color: #065f46">{{ stats.total }}</p>
@@ -248,7 +246,7 @@
                         <!-- 圓角選擇 -->
                         <div class="mb-4">
                             <label class="text-xs font-medium mb-2 block" style="color: #6b7280">圓角樣式</label>
-                            <div class="flex gap-2">
+                            <div class="flex flex-wrap gap-2">
                                 <button v-for="r in radiusOptions" :key="r.value" @click="setLinkRadius(r.value)"
                                     :style="profile.link_radius === r.value
                                         ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;'
@@ -284,7 +282,7 @@
                         style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
                         <h2 class="text-sm font-medium mb-4" style="color: #374151">新增卡片</h2>
 
-                        <div class="flex gap-2 mb-4">
+                        <div class="flex flex-wrap gap-2 mb-4">
                             <button v-for="t in cardTypes" :key="t.value" @click="newType = t.value"
                                 :style="newType === t.value ? 'background: linear-gradient(135deg, #059669, #34d399); color: white;' : 'background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280'"
                                 class="text-xs px-4 py-2 rounded-xl transition font-medium">
@@ -711,12 +709,6 @@ const urlPlaceholder = computed(() => {
 
 })
 
-const linkRadius = computed(() => {
-    if (profile.value?.link_radius === 'square') return '8px'
-    if (profile.value?.link_radius === 'pill') return '9999px'
-    return '16px'
-})
-
 const linkTextClass = computed(() => {
     const color = profile.value?.link_color || '#ffffff'
     const dark = ['#1e293b', '#0f172a', '#065f46']
@@ -938,7 +930,7 @@ async function addLink() {
             : newType.value === 'pressplay'
                 ? pressplayPreview.value?.image
                 : null,
-        expires_at: hasExpiry.value && expiresAt.value ? new Date(expiresAt.value).toISOString() : null
+        expires_at: hasExpiry.value && expiresAt.value ? new Date(expiresAt.value).toISOString() : null //如果用戶勾了勾選框而且也選了時間，就把時間轉成 ISO 格式存進資料庫否則存 null
     })
 
     if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
