@@ -32,110 +32,7 @@
             <!-- 卡片清單 -->
             <div class="flex flex-col gap-3">
                 <template v-for="link in links" :key="link.id">
-
-                    <!-- 一般連結 -->
-                    <a v-if="link.type === 'link' || !link.type" :href="link.url" target="_blank"
-                        rel="noopener noreferrer" :style="{
-                            backgroundColor: profile.link_color || '#ffffff',
-                            borderRadius: linkRadius,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                        }"
-                        class="block w-full px-6 py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
-                        :class="linkTextClass" style="border: 1px solid rgba(255,255,255,0.6)"
-                        @click="recordClick(link.id)">
-                        {{ link.title }}
-                        <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" :center="true"
-                            class="mt-2" />
-                    </a>
-                    <!-- YouTube 影片 -->
-                    <div v-else-if="link.type === 'youtube'" class="w-full overflow-hidden" :style="{
-                        borderRadius: linkRadius,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                        border: '1px solid rgba(255,255,255,0.6)'
-                    }">
-                        <p v-if="link.title" class="text-sm font-medium px-4 py-3 text-center"
-                            style="background: rgba(255,255,255,0.8); color: #374151">
-                            {{ link.title }}
-                        </p>
-                        <div class="relative w-full" style="padding-top: 56.25%">
-                            <iframe :src="getYoutubeEmbedUrl(link.url)" class="absolute top-0 left-0 w-full h-full"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen />
-                        </div>
-                    </div>
-
-                    <!-- 圖片 -->
-                    <div v-else-if="link.type === 'image'" class="w-full overflow-hidden" :style="{
-                        borderRadius: linkRadius,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                        border: '1px solid rgba(255,255,255,0.6)'
-                    }">
-                        <img :src="link.url" class="w-full object-cover" />
-                        <p v-if="link.title" class="text-sm font-medium px-4 py-3 text-center"
-                            style="background: rgba(255,255,255,0.8); color: #374151">
-                            {{ link.title }}
-                        </p>
-                    </div>
-
-                    <!-- 蝦皮商品卡片 -->
-                    <a v-else-if="link.type === 'shopee'" :href="link.url" target="_blank" rel="noopener noreferrer"
-                        class="block w-full overflow-hidden transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
-                        :style="{
-                            backgroundColor: profile.link_color || '#ffffff',
-                            borderRadius: linkRadius,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            border: '1px solid rgba(255,255,255,0.6)'
-                        }" @click="recordClick(link.id)">
-                        <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-40 object-cover" />
-                        <div class="px-5 py-3 flex items-center justify-between gap-3">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium" :class="linkTextClass">{{ link.title }}</p>
-                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" class="mt-1" />
-                            </div>
-                            <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
-                                style="background: #ee4d2d; color: white">蝦皮</span>
-                        </div>
-                    </a>
-
-                    <!-- LINE 加好友 -->
-                    <a v-else-if="link.type === 'line'" :href="link.url" target="_blank" rel="noopener noreferrer"
-                        class="block w-full py-4 text-center text-sm font-medium transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
-                        :style="{
-                            borderRadius: linkRadius,
-                            boxShadow: '0 2px 8px rgba(6,199,85,0.25)'
-                        }" style="background: #06C755; color: white;" @click="recordClick(link.id)">
-                        <div class="flex items-center justify-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                                <path
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11.5h-3.5V17h-3v-3.5H7v-3h3.5V7h3v3.5H17v3z" />
-                            </svg>
-                            {{ link.title || '加入 LINE 好友' }}
-                        </div>
-                    </a>
-
-                    <!-- Pressplay 訂閱卡片 -->
-                    <a v-else-if="link.type === 'pressplay'" :href="link.url" target="_blank" rel="noopener noreferrer"
-                        class="block w-full overflow-hidden transition-all duration-200 hover:opacity-75 hover:-translate-y-0.5"
-                        :style="{
-                            borderRadius: linkRadius,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                            border: '1px solid rgba(255,255,255,0.6)'
-                        }" @click="recordClick(link.id)">
-                        <img v-if="link.thumbnail" :src="link.thumbnail" class="w-full h-36 object-cover" />
-                        <div class="px-4 py-3 flex items-center justify-between gap-3"
-                            :style="{ backgroundColor: profile.link_color || '#ffffff' }">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium truncate" :class="linkTextClass">{{ link.title }}</p>
-                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at" class="mt-1" />
-                            </div>
-                            <span class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
-                                style="background: #e8554e; color: white">
-                                Pressplay
-                            </span>
-                        </div>
-                    </a>
-
+                    <LinkCard :link="link" :profile="profile" @click="recordClick" />
                 </template>
             </div>
 
@@ -239,29 +136,6 @@ onMounted(async () => {
     }
 
     pending.value = false
-})
-
-function getYoutubeEmbedUrl(url) {
-    let videoId = ''
-    if (url.includes('youtu.be/')) {
-        videoId = url.split('youtu.be/')[1].split('?')[0]
-    } else if (url.includes('watch?v=')) {
-        videoId = url.split('watch?v=')[1].split('&')[0]
-    }
-    return `https://www.youtube.com/embed/${videoId}`
-}
-
-const linkRadius = computed(() => {
-    if (profile.value?.link_radius === 'square') return '8px'
-    if (profile.value?.link_radius === 'pill') return '9999px'
-    return '16px' // rounded（預設）
-})
-
-const linkTextClass = computed(() => {
-    const color = profile.value?.link_color || '#ffffff'
-    // 深色背景用白色文字，淺色背景用深色文字
-    const dark = ['#1e293b', '#0f172a', '#065f46']
-    return dark.includes(color) ? 'text-white' : 'text-gray-700'
 })
 
 const isDarkBg = computed(() => {

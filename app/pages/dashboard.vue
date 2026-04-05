@@ -343,7 +343,7 @@
                                 <input type="file" accept="image/*" @change="onCardImageSelected" class="hidden" />
                                 <span v-if="newCardImageFile" class="text-xs" style="color: #059669">{{
                                     newCardImageFile.name
-                                    }}</span>
+                                }}</span>
                             </label>
                             <!-- 限時優惠設定 -->
                             <div v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay'"
@@ -398,7 +398,7 @@
                                         </span>
                                         <div class="min-w-0">
                                             <p class="text-sm font-medium truncate" style="color: #065f46">{{ link.title
-                                                }}</p>
+                                            }}</p>
                                             <p class="text-xs mt-0.5 truncate" style="color: #6b7280">{{ link.url }}</p>
                                             <p class="text-xs mt-1 font-medium" style="color: #059669">{{
                                                 link.link_clicks[0].count }} 次點擊</p>
@@ -513,102 +513,8 @@
                                 <!-- 連結清單預覽 -->
                                 <div class="flex flex-col gap-2">
                                     <template v-for="link in links" :key="link.id">
-                                        <div v-if="link.is_visible !== false">
-
-                                            <!-- 一般連結 -->
-                                            <div v-if="link.type === 'link' || !link.type"
-                                                class="w-full px-4 py-3 text-center text-xs font-medium transition"
-                                                :style="{
-                                                    backgroundColor: profile.link_color || '#ffffff',
-                                                    borderRadius: previewLinkRadius
-                                                }" style="border: 1px solid rgba(0,0,0,0.08)">
-                                                <span :class="linkTextClass">{{ link.title }}</span>
-                                                <CountdownBadge v-if="link.expires_at" :expires-at="link.expires_at"
-                                                    :center="true" class="mt-1.5" />
-                                            </div>
-
-                                            <!-- YouTube -->
-                                            <div v-else-if="link.type === 'youtube'" class="w-full overflow-hidden"
-                                                :style="{
-                                                    backgroundColor: profile.link_color || '#ffffff',
-                                                    borderRadius: previewLinkRadius
-                                                }" style="border: 1px solid rgba(0,0,0,0.08)">
-                                                <div class="relative w-full"
-                                                    style="padding-top: 56.25%; background: #000">
-                                                    <div class="absolute inset-0 flex items-center justify-center">
-                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="white"
-                                                            opacity="0.8">
-                                                            <path d="M8 5v14l11-7z" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                <p v-if="link.title" class="text-xs text-center py-2 px-3"
-                                                    :class="linkTextClass">{{ link.title }}</p>
-                                            </div>
-
-                                            <!-- 圖片 -->
-                                            <div v-else-if="link.type === 'image'" class="w-full overflow-hidden"
-                                                :style="{ borderRadius: previewLinkRadius }"
-                                                style="border: 1px solid rgba(0,0,0,0.08)">
-                                                <img :src="link.url" class="w-full object-cover"
-                                                    style="max-height: 120px" />
-                                                <p v-if="link.title" class="text-xs text-center py-2 px-3"
-                                                    style="color: #374151">{{ link.title }}</p>
-                                            </div>
-
-                                            <!-- 蝦皮 -->
-                                            <div v-else-if="link.type === 'shopee'" class="w-full overflow-hidden"
-                                                :style="{
-                                                    backgroundColor: profile.link_color || '#ffffff',
-                                                    borderRadius: previewLinkRadius
-                                                }" style="border: 1px solid rgba(0,0,0,0.08)">
-                                                <img v-if="link.thumbnail" :src="link.thumbnail"
-                                                    class="w-full object-cover" style="max-height: 80px" />
-                                                <div class="px-3 py-2 flex items-center justify-between gap-2">
-                                                    <div class="flex-1 min-w-0">
-                                                        <p class="text-xs font-medium truncate" :class="linkTextClass">
-                                                            {{ link.title }}</p>
-                                                        <CountdownBadge v-if="link.expires_at"
-                                                            :expires-at="link.expires_at" class="mt-1" />
-                                                    </div>
-                                                    <span class="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                                                        style="background: #ee4d2d; color: white">蝦皮</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- LINE -->
-                                            <div v-else-if="link.type === 'line'"
-                                                class="w-full py-3 text-center text-xs font-medium"
-                                                style="background: #06C755; border-radius: 12px; color: white;">
-                                                <div class="flex items-center justify-center gap-1">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                                                        <path
-                                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11.5h-3.5V17h-3v-3.5H7v-3h3.5V7h3v3.5H17v3z" />
-                                                    </svg>
-                                                    {{ link.title || '加入 LINE 好友' }}
-                                                </div>
-                                            </div>
-
-                                            <!-- Pressplay -->
-                                            <div v-else-if="link.type === 'pressplay'" class="w-full overflow-hidden"
-                                                :style="{ borderRadius: previewLinkRadius }">
-                                                <img v-if="link.thumbnail" :src="link.thumbnail"
-                                                    class="w-full object-cover" style="max-height: 80px" />
-                                                <div class="px-3 py-2 flex items-center justify-between gap-2"
-                                                    :style="{ backgroundColor: profile.link_color || '#ffffff' }">
-                                                    <div class="flex-1 min-w-0">
-                                                        <p class="text-xs font-medium truncate" :class="linkTextClass">
-                                                            {{ link.title }}</p>
-                                                        <CountdownBadge v-if="link.expires_at"
-                                                            :expires-at="link.expires_at" class="mt-1" />
-                                                    </div>
-                                                    <span
-                                                        class="text-xs font-medium flex-shrink-0 px-3 py-1 rounded-full"
-                                                        style="background: #e8554e; color: white">Pressplay</span>
-                                                </div>
-                                            </div>
-
-                                        </div>
+                                        <LinkCard v-if="link.is_visible !== false" :link="link" :profile="profile"
+                                            :is-preview="true" />
                                     </template>
                                 </div>
 
