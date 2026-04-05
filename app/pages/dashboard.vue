@@ -98,14 +98,8 @@
                         <!-- 頭貼 -->
                         <div class="flex items-center gap-4 mb-4">
                             <div class="relative flex-shrink-0">
-                                <div class="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center"
-                                    style="background: rgba(5,150,105,0.15); border: 2px solid rgba(52,211,153,0.4)">
-                                    <img v-if="profile.avatar_url" :src="profile.avatar_url"
-                                        class="w-full h-full object-cover" />
-                                    <span v-else class="text-xl font-medium" style="color: #059669">
-                                        {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
-                                    </span>
-                                </div>
+                                <AvatarDisplay :avatar-url="profile.avatar_url" :display-name="profile.display_name"
+                                    :username="profile.username" :size="64" />
                                 <label
                                     class="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition"
                                     :style="uploadingAvatar ? 'background: #9ca3af' : 'background: #059669'">
@@ -323,7 +317,7 @@
                                 <input type="file" accept="image/*" @change="onCardImageSelected" class="hidden" />
                                 <span v-if="newCardImageFile" class="text-xs" style="color: #059669">{{
                                     newCardImageFile.name
-                                    }}</span>
+                                }}</span>
                             </label>
                             <!-- 限時優惠設定 -->
                             <div v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay'"
@@ -378,7 +372,7 @@
                                         </span>
                                         <div class="min-w-0">
                                             <p class="text-sm font-medium truncate" style="color: #065f46">{{ link.title
-                                                }}</p>
+                                            }}</p>
                                             <p class="text-xs mt-0.5 truncate" style="color: #6b7280">{{ link.url }}</p>
                                             <p class="text-xs mt-1 font-medium" style="color: #059669">{{
                                                 link.link_clicks[0].count }} 次點擊</p>
@@ -475,14 +469,8 @@
 
                                 <!-- 頭像 -->
                                 <div class="text-center mb-6">
-                                    <div class="w-16 h-16 rounded-full mx-auto mb-2 overflow-hidden flex items-center justify-center"
-                                        style="background: rgba(5,150,105,0.15); border: 2px solid rgba(52,211,153,0.4)">
-                                        <img v-if="profile.avatar_url" :src="profile.avatar_url"
-                                            class="w-full h-full object-cover" />
-                                        <span v-else class="text-xl font-medium" style="color: #059669">
-                                            {{ profile.display_name?.charAt(0) || profile.username.charAt(0) }}
-                                        </span>
-                                    </div>
+                                    <AvatarDisplay :avatar-url="profile.avatar_url" :display-name="profile.display_name"
+                                        :username="profile.username" :size="64" class="mx-auto mb-2" />
                                     <p class="text-sm font-medium" :style="{ color: previewProfileTextColor }">
                                         {{ profile.display_name || profile.username }}
                                     </p>
