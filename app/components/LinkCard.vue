@@ -129,20 +129,24 @@ const props = defineProps({
     isPreview: { type: Boolean, default: false }
 })
 
+// 宣告這個元件會發出 'click' 事件
 defineEmits(['click'])
 
+// 把資料庫存的字串轉換成css的圓角值
 const linkRadius = computed(() => {
     if (props.profile?.link_radius === 'square') return '8px'
     if (props.profile?.link_radius === 'pill') return '9999px'
     return '16px'
 })
 
+// 根據連結卡片的背景顏色，決定文字要用白色還是深色
 const linkTextClass = computed(() => {
     const color = props.profile?.link_color || '#ffffff'
     const dark = ['#1e293b', '#0f172a', '#065f46']
     return dark.includes(color) ? 'text-white' : 'text-gray-700'
 })
 
+//將兩種youtube影片網址格式轉換成可嵌入iframe的格式
 function getYoutubeEmbedUrl(url) {
     let videoId = ''
     if (url.includes('youtu.be/')) {

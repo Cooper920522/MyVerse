@@ -77,31 +77,11 @@
 
                     <!-- 統計儀表板 -->
                     <div class="grid grid-cols-3 gap-3 mb-4 lg:grid-cols-5">
-                        <div class="rounded-2xl p-4 text-center"
-                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
-                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.total }}</p>
-                            <p class="text-xs mt-1" style="color: #6b7280">總點擊數</p>
-                        </div>
-                        <div class="rounded-2xl p-4 text-center"
-                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
-                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.today }}</p>
-                            <p class="text-xs mt-1" style="color: #6b7280">今日點擊</p>
-                        </div>
-                        <div class="rounded-2xl p-4 text-center"
-                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
-                            <p class="text-2xl font-medium" style="color: #065f46">{{ links.length }}</p>
-                            <p class="text-xs mt-1" style="color: #6b7280">連結數量</p>
-                        </div>
-                        <div class="rounded-2xl p-4 text-center"
-                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
-                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.totalViews }}</p>
-                            <p class="text-xs mt-1" style="color: #6b7280">總訪客數</p>
-                        </div>
-                        <div class="rounded-2xl p-4 text-center"
-                            style="background: rgba(255,255,255,0.7); border: 1px solid rgba(16,185,129,0.15); backdrop-filter: blur(12px)">
-                            <p class="text-2xl font-medium" style="color: #065f46">{{ stats.todayViews }}</p>
-                            <p class="text-xs mt-1" style="color: #6b7280">今日訪客</p>
-                        </div>
+                        <StatCard :value="stats.total" label="總點擊數" />
+                        <StatCard :value="stats.today" label="今日點擊" />
+                        <StatCard :value="links.length" label="連結數量" />
+                        <StatCard :value="stats.totalViews" label="總訪客數" />
+                        <StatCard :value="stats.todayViews" label="今日訪客" />
                     </div>
 
                     <!-- 個人資料 -->
@@ -343,7 +323,7 @@
                                 <input type="file" accept="image/*" @change="onCardImageSelected" class="hidden" />
                                 <span v-if="newCardImageFile" class="text-xs" style="color: #059669">{{
                                     newCardImageFile.name
-                                }}</span>
+                                    }}</span>
                             </label>
                             <!-- 限時優惠設定 -->
                             <div v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay'"
@@ -398,7 +378,7 @@
                                         </span>
                                         <div class="min-w-0">
                                             <p class="text-sm font-medium truncate" style="color: #065f46">{{ link.title
-                                            }}</p>
+                                                }}</p>
                                             <p class="text-xs mt-0.5 truncate" style="color: #6b7280">{{ link.url }}</p>
                                             <p class="text-xs mt-1 font-medium" style="color: #059669">{{
                                                 link.link_clicks[0].count }} 次點擊</p>

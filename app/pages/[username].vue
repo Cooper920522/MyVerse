@@ -161,6 +161,7 @@ const profileSubTextColor = computed(() => {
     return isDarkBg.value ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)'
 })
 
+//監聽LinkCard元件發出的'click'
 async function recordClick(linkId) {
     await $supabase
         .from('link_clicks')
