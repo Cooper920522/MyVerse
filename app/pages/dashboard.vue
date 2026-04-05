@@ -31,11 +31,7 @@
                     <p v-if="usernameError" class="text-xs mt-1.5" style="color: #ef4444">{{ usernameError }}</p>
                 </div>
 
-                <button @click="createProfile" :disabled="saving"
-                    class="w-full text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
-                    style="background: linear-gradient(135deg, #059669, #34d399)">
-                    {{ saving ? '建立中...' : '建立我的頁面' }}
-                </button>
+                <GreenButton text="建立我的頁面" loading-text="建立中..." :loading="saving" @click="createProfile" />
             </div>
         </div>
 
@@ -151,11 +147,8 @@
                                     style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">
                                     取消
                                 </button>
-                                <button @click="saveProfile" :disabled="savingProfile"
-                                    class="flex-1 text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
-                                    style="background: linear-gradient(135deg, #059669, #34d399)">
-                                    {{ savingProfile ? '儲存中...' : '儲存' }}
-                                </button>
+                                <GreenButton text="儲存" loading-text="儲存中..." :loading="savingProfile" class="flex-1"
+                                    @click="saveProfile" />
                             </div>
                         </div>
                     </div>
@@ -333,11 +326,7 @@
                                     onblur="this.style.borderColor='rgba(16,185,129,0.25)'" />
                             </div>
                             <p v-if="linkError" class="text-xs" style="color: #ef4444">{{ linkError }}</p>
-                            <button @click="addLink" :disabled="addingLink"
-                                class="w-full text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
-                                style="background: linear-gradient(135deg, #059669, #34d399)">
-                                {{ addingLink ? '新增中...' : '+ 新增卡片' }}
-                            </button>
+                            <GreenButton text="+ 新增卡片" loading-text="新增中..." :loading="addingLink" @click="addLink" />
                         </div>
                     </div>
 
@@ -436,11 +425,8 @@
                                         <button @click="closeEdit"
                                             class="flex-1 rounded-xl py-3 text-sm font-medium transition"
                                             style="background: white; border: 1px solid rgba(16,185,129,0.25); color: #6b7280">取消</button>
-                                        <button @click="saveEdit" :disabled="saving"
-                                            class="flex-1 text-white rounded-xl py-3 text-sm font-medium transition disabled:opacity-50"
-                                            style="background: linear-gradient(135deg, #059669, #34d399)">
-                                            {{ saving ? '儲存中...' : '儲存' }}
-                                        </button>
+                                        <GreenButton text="儲存" loading-text="儲存中..." :loading="saving" class="flex-1"
+                                            @click="saveEdit" />
                                     </div>
                                 </div>
                             </div>
