@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 星球本體 -->
+  <circle cx="16" cy="16" r="10" fill="#059669"/>
+  <!-- 軌道環 -->
+  <ellipse cx="16" cy="16" rx="15" ry="5" fill="none" stroke="#34d399" stroke-width="2"/>
+  <!-- 星球亮點 -->
+  <circle cx="12" cy="12" r="2.5" fill="white" opacity="0.25"/>
+</svg>

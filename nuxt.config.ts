@@ -3,6 +3,13 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/tailwindcss',
     ],
+    app: {
+        head: {
+            link: [
+                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
+            ]
+        }
+    },
     runtimeConfig: {
         public: {
             supabaseUrl: process.env.SUPABASE_URL,

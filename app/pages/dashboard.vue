@@ -44,7 +44,7 @@
                     <!-- 標題列 -->
                     <div class="flex flex-col gap-3 mb-8 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h1 class="text-xl font-medium" style="color: #065f46">Myverse</h1>
+                            <img src="/Logo.png" alt="Myverse" class="h-24 w-auto" />
                             <p class="text-sm mt-0.5" style="color: #6b7280">myverse.me/{{ profile.username }}</p>
                         </div>
                         <div class="flex items-center gap-3 flex-wrap">

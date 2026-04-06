@@ -6,7 +6,7 @@
             style="background: rgba(255,255,255,0.75); border: 1px solid rgba(16,185,129,0.2); backdrop-filter: blur(20px)">
 
             <div class="mb-8">
-                <h1 class="text-3xl font-medium" style="color: #065f46">Myverse</h1>
+                <img src="/Logo.png" alt="Myverse" class="h-34 w-auto mb-1" />
                 <p class="text-sm mt-1" style="color: #6b7280">你在網路上的專屬宇宙</p>
             </div>
 
