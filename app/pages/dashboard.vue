@@ -312,6 +312,10 @@
                                     newCardImageFile.name
                                 }}</span>
                             </label>
+                            <!-- 連結圖示 -->
+                            <IconPicker
+                                v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay' || newType === 'line'"
+                                v-model="newIconUrl" :profile-id="profile.id" />
                             <!-- 限時優惠設定 -->
                             <div v-if="newType === 'link' || newType === 'shopee' || newType === 'pressplay'"
                                 class="flex flex-col gap-2">
@@ -525,6 +529,7 @@ const expiresAt = ref('')
 
 const editHasExpiry = ref(false)
 const editExpiresAt = ref('')
+const editIconUrl = ref(null)
 
 const editingProfile = ref(false)
 const editDisplayName = ref('')
@@ -541,6 +546,8 @@ const pressplayPreview = ref(null)
 const fetchingPressplayPreview = ref(false)
 
 const copied = ref(false)
+
+const newIconUrl = ref(null)
 
 const cardTypes = [
     { value: 'link', label: '連結' },
@@ -790,7 +797,8 @@ async function addLink() {
             : newType.value === 'pressplay'
                 ? pressplayPreview.value?.image
                 : null,
-        expires_at: hasExpiry.value && expiresAt.value ? new Date(expiresAt.value).toISOString() : null //如果用戶勾了勾選框而且也選了時間，就把時間轉成 ISO 格式存進資料庫否則存 null
+        expires_at: hasExpiry.value && expiresAt.value ? new Date(expiresAt.value).toISOString() : null, //如果用戶勾了勾選框而且也選了時間，就把時間轉成 ISO 格式存進資料庫否則存 null
+        icon_url: newIconUrl.value || null
     })
 
     if (error) { linkError.value = '新增失敗，請再試一次'; addingLink.value = false; return }
@@ -804,6 +812,7 @@ async function addLink() {
     addingLink.value = false
     hasExpiry.value = false
     expiresAt.value = ''
+    newIconUrl.value = null
     await fetchLinks()
 }
 
@@ -838,6 +847,7 @@ async function toggleVisible(link) {
 //開啟編輯狀態
 function openEdit(link) {
     editingLink.value = link
+    editIconUrl.value = link.icon_url || null
     editTitle.value = link.title
     editUrl.value = link.url
     editHasExpiry.value = !!link.expires_at
@@ -854,6 +864,7 @@ function closeEdit() {
     editError.value = ''
     editHasExpiry.value = false
     editExpiresAt.value = ''
+    editIconUrl.value = null
 }
 
 //儲存編輯
@@ -870,7 +881,8 @@ async function saveEdit() {
         url: editingLink.value.type !== 'image' ? editUrl.value : editingLink.value.url,
         expires_at: editHasExpiry.value && editExpiresAt.value
             ? new Date(editExpiresAt.value).toISOString()
-            : null
+            : null,
+        icon_url: editIconUrl.value || null
     }).eq('id', editingLink.value.id)
 
     if (error) { editError.value = '儲存失敗，請再試一次'; saving.value = false; return }
